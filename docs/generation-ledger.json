@@ -1,0 +1,47 @@
+{
+  "project": "FOLD",
+  "budget_scope": "New standalone project. Earlier projects excluded.",
+  "credit_limit": 150,
+  "actual_spent_credits": 2.75,
+  "reserved_credits": 0,
+  "remaining_unreserved_credits": 147.25,
+  "currency": "Higgsfield credits",
+  "additional_credit_or_subscription_purchases_allowed": false,
+  "operations": [
+    {
+      "id": "fold-paper-001",
+      "purpose": "Warm ivory fine washi fibers for the actual folding crane surface; replace visibly directional procedural fibers only if in-site evaluation improves material.",
+      "status": "submitted_pending",
+      "model_id": "gpt_image_2_6",
+      "model_name": "GPT Image 2.6",
+      "provider": "OpenAI",
+      "quote_credits": 2.75,
+      "reserved_credits": 0,
+      "actual_credits": 2.75,
+      "job_id": "050d8611-24a3-469c-a223-2e525135851f",
+      "immutable_constraints": [
+        "One texture, no duplicate generations",
+        "No finished crane or city model",
+        "No text, folds, objects, baked lighting, stains or plastic sheen",
+        "One 1:1 high-quality 2k PNG",
+        "No purchases or subscriptions",
+        "Evaluate in the real site before deciding on another generation"
+      ],
+      "acceptance_tests": [
+        "Square image of fine irregular non-directional fibers without objects or text",
+        "Warm ivory albedo with low contrast, no directional lighting",
+        "Opposite-edge match checked; local technical seam correction allowed",
+        "Real site close-up at normal lighting shows subtle paper detail without sparkle or plastic relief",
+        "Material works in closed, intermediate and open poses and is not a performance burden"
+      ],
+      "params_file": "assets/higgsfield/fold-paper-001/params.json",
+      "quote_file": "assets/higgsfield/fold-paper-001/quote.json",
+      "schema_file": "assets/higgsfield/fold-paper-001/model-schema.json",
+      "original_file": null,
+      "decision": "pending_generation_and_site_evaluation",
+      "site_evaluation": null,
+      "submitted_at": "2026-11-10T11:58:51.780929+00:00",
+      "charge_evidence": "Exact preflight 2.75 credits; account balance 492.75 before and 490 after this sole submitted operation. No invoice endpoint is exposed."
+    }
+  ]
+}
