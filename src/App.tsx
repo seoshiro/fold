@@ -495,7 +495,15 @@ function App() {
               <span className="title-period">.</span>
             </h1>
             <p className="city-subtitle">{city.subtitle[lang]}</p>
-            <div className="tabs" role="tablist" aria-label={city.name[lang]}>
+            <div className="tabs" role="tablist" aria-label={city.name[lang]} onKeyDown={(event) => {
+              if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+              event.preventDefault();
+              const order = ['walk','places','notes'] as const;
+              const i = order.indexOf(tab);
+              const next = event.key === 'Home' ? order[0] : event.key === 'End' ? order[2] : order[(i + (event.key === 'ArrowRight' ? 1 : 2)) % 3];
+              setTab(next);
+              event.currentTarget.querySelector<HTMLButtonElement>('#tab-' + next)?.focus();
+            }}>
               {(["walk", "places", "notes"] as const).map((x) => (
                 <button
                   key={x}
@@ -503,6 +511,7 @@ function App() {
                   id={"tab-" + x}
                   aria-controls="city-tab-panel"
                   aria-selected={tab === x}
+                  tabIndex={tab === x ? 0 : -1}
                   onClick={() => setTab(x)}
                 >
                   {t[x]}
