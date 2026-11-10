@@ -1440,3 +1440,6 @@ footer a > span {
 footer {font-size:10px}
 footer > span {opacity:.85}
 footer button,footer a {min-height:44px}
+
+/* Model-only fallback poster: soft contact without a baked rectangular floor. */
+.fallback-poster {filter:drop-shadow(0 16px 10px #3b0b0730)}

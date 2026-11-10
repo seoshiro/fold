@@ -394,7 +394,7 @@ function App() {
                 if (!currentTarget.src.endsWith("paper-crane.svg"))
                   currentTarget.src = base + "paper-crane.svg";
               }}
-              src={`${base}posters/${city?.id || "crane"}.webp`}
+              src={`${base}posters/${city?.id || "crane"}.webp?v=20261110-modelonly`}
               alt={city ? city.name[lang] : t.sceneDescription}
             />
           )}

@@ -430,7 +430,7 @@ if '--proof' in sys.argv:
  for i,p in enumerate([0,.25,.5,.75,1]):
   pose(p);scene.render.filepath=str(ROOT/f'model/proof/hinge-{i*25:03d}.png');bpy.ops.render.render(write_still=True)
 if '--render' in sys.argv:
- scene.render.film_transparent=True;ground.is_shadow_catcher=True
- scene.render.resolution_x=1500;scene.render.resolution_y=1100;scene.cycles.samples=64
+ scene.render.film_transparent=True;ground.hide_render=True;ground.is_shadow_catcher=False
+ scene.render.resolution_x=1500;scene.render.resolution_y=1100;scene.cycles.samples=24
  for id in ['crane','kyoto','lisbon','almaty']:
   pose(0 if id=='crane' else 1,id if id!='crane' else 'kyoto');scene.render.filepath=str(ROOT/f'public/posters/{id}.png');bpy.ops.render.render(write_still=True)

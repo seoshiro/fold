@@ -29,6 +29,8 @@ elif '--proof' in sys.argv:
  for i,p in enumerate([0,.25,.5,.75,1]):
   pose(p,'kyoto');s.render.filepath=str(ROOT/f'model/proof/hinge-{i*25:03d}.png');bpy.ops.render.render(write_still=True)
 else:
- s.render.film_transparent=True;bpy.data.objects['RENDER_ground'].is_shadow_catcher=True
+ s.render.film_transparent=True;s.cycles.samples=24
+ bpy.data.objects['RENDER_ground'].hide_render=True
+ bpy.data.objects['RENDER_ground'].is_shadow_catcher=False
  for id in ['crane','kyoto','lisbon','almaty']:
   pose(0 if id=='crane' else 1,id);s.render.filepath=str(ROOT/f'public/posters/{id}.png');bpy.ops.render.render(write_still=True)

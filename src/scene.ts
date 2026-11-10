@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { gsap } from 'gsap';
+import { MODEL_REVISION, PAPER_ALBEDO_REVISION, PAPER_HEIGHT_REVISION } from './model-revision';
 
 export type CityId = 'kyoto' | 'lisbon' | 'almaty';
 export type SceneAnchor = { id: string; x: number; y: number; visible: boolean };
@@ -47,7 +48,7 @@ export class FoldScene {
   private activeUntil = 0;
   private pointer: { id: number; x: number; y: number; originX: number; originY: number; moved: boolean } | null = null;
   private suppressUntil = 0;
-  private stats = { frames: 0, draws: 0, triangles: 0, meshes: 0, geometries: 0, loadMs: 0 };
+  private stats = { frames: 0, draws: 0, triangles: 0, meshes: 0, geometries: 0, loadMs: 0, assetBytes: 0 };
   private projected = new THREE.Vector3();
   private lastAnchorHash = '';
   private onPointerDown = (e: PointerEvent) => this.pointerDown(e);
@@ -96,7 +97,7 @@ export class FoldScene {
     this.canvas.addEventListener('webglcontextlost', this.onLost);
     this.resize();
     const start = performance.now();
-    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/fold-master.glb`, async gltf => {
+    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/fold-master.glb?v=${MODEL_REVISION}`, async gltf => {
       if (this.disposed) { this.disposeObject(gltf.scene); return; }
       this.model = gltf.scene; this.orbit.add(this.model);
       this.prepareModel();
@@ -107,7 +108,7 @@ export class FoldScene {
       this.applyPose(); this.render();
       this.options.onReady();
       this.setTarget(this.target, true);
-    }, undefined, e => this.options.onError(e instanceof Error ? e : new Error('The paper model could not be loaded')));
+    }, progress => { this.stats.assetBytes = progress.loaded; }, e => this.options.onError(e instanceof Error ? e : new Error('The paper model could not be loaded')));
     this.loop();
     // The debug surface is deliberately read-only except for documented deterministic pose controls.
     (window as unknown as { __FOLD_SCENE?: FoldScene }).__FOLD_SCENE = this;
@@ -147,8 +148,8 @@ export class FoldScene {
     try {
       const loader = new THREE.TextureLoader();
       const [albedo, height] = await Promise.all([
-        loader.loadAsync(`${import.meta.env.BASE_URL}textures/higgsfield-washi-albedo.webp`),
-        loader.loadAsync(`${import.meta.env.BASE_URL}textures/higgsfield-washi-height.webp`),
+        loader.loadAsync(`${import.meta.env.BASE_URL}textures/higgsfield-washi-albedo.webp?v=${PAPER_ALBEDO_REVISION}`),
+        loader.loadAsync(`${import.meta.env.BASE_URL}textures/higgsfield-washi-height.webp?v=${PAPER_HEIGHT_REVISION}`),
       ]);
       albedo.colorSpace = THREE.SRGBColorSpace;
       for (const t of [albedo, height]) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.flipY = false; t.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy(), 4); }
@@ -213,7 +214,7 @@ export class FoldScene {
   rotate(delta: number) { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { dragX: clamp(this.pose.dragX + delta, -.34, .34), duration: this.target.reducedMotion ? .1 : .4, onUpdate: () => this.invalidate() }); }
   zoom(delta: number) { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { zoom: clamp(this.pose.zoom + delta, .82, 1.32), duration: .3, onUpdate: () => this.invalidate() }); }
   get isDragging() { return !!this.pointer?.moved || performance.now() < this.suppressUntil; }
-  getStats() { return { ...this.stats, state: this.state, pose: { ...this.pose }, renderer: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles }, size: [this.width, this.height] }; }
+  getStats() { return { ...this.stats, state: this.state, asset: { expectedRevision: MODEL_REVISION, primitiveMeshes: this.stats.meshes, covers: this.covers.map(c => ({ name: c.node.name, foldOpen: c.open, pivot: c.node.position.toArray(), currentRotationX: c.node.rotation.x })) }, pose: { ...this.pose }, renderer: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles }, size: [this.width, this.height] }; }
 
   /** Reproducible proof poses, shared by QA and screenshots. Does not replace normal navigation. */
   setProgress(city: CityId, progress: number) {

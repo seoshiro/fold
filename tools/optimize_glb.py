@@ -3,7 +3,7 @@ The live site independently uses approved 1024px WebP albedo and height textures
 """
 from pathlib import Path
 from PIL import Image
-import struct,json,io
+import struct,json,io,hashlib
 ROOT=Path(__file__).resolve().parents[1];p=ROOT/'public/models/fold-master.glb'
 d=p.read_bytes();jl=struct.unpack_from('<I',d,12)[0];j=json.loads(d[20:20+jl]);start=20+jl;bl=struct.unpack_from('<I',d,start)[0];binary=d[start+8:start+8+bl]
 images={im['bufferView']:im for im in j.get('images',[]) if 'bufferView'in im}
@@ -32,3 +32,6 @@ js=json.dumps(j,separators=(',',':')).encode()
 while len(js)%4:js+=b' '
 p.write_bytes(struct.pack('<III',0x46546c67,2,12+8+len(js)+8+len(new))+struct.pack('<II',len(js),0x4e4f534a)+js+struct.pack('<II',len(new),0x004e4942)+new)
 manifest=ROOT/'model/asset-manifest.json';a=json.loads(manifest.read_text());a['glb_bytes']=p.stat().st_size;a['texture']={'embedded_fallback':{'format':'JPEG','width':512,'height':512,'quality':88},'runtime_albedo':{'file':'higgsfield-washi-albedo.webp','width':1024,'height':1024,'color_space':'sRGB'},'runtime_height':{'file':'higgsfield-washi-height.webp','width':1024,'height':1024,'color_space':'linear'},'source':'One Higgsfield paper generation, normalized and made seamless locally. See docs/generation-ledger.json and original archived asset. Original deterministic texture remains in public/textures/paper-fibers.png.'};manifest.write_text(json.dumps(a,indent=2));print('Optimized GLB bytes:',p.stat().st_size)
+
+revision_assets=[('MODEL_REVISION','public/models/fold-master.glb'),('PAPER_ALBEDO_REVISION','public/textures/higgsfield-washi-albedo.webp'),('PAPER_HEIGHT_REVISION','public/textures/higgsfield-washi-height.webp')]
+(ROOT/'src/model-revision.ts').write_text('// Content-addressed cache keys, generated from the actual asset bytes.\n'+''.join("export const "+name+" = '"+hashlib.sha256((ROOT/path).read_bytes()).hexdigest()[:12]+"';\n" for name,path in revision_assets))

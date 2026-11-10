@@ -1,0 +1,70 @@
+[
+  {
+    "file": "crane.webp",
+    "dimensions": [
+      1245,
+      770
+    ],
+    "bytes": 41480,
+    "source": "Transparent model-only CPU Cycles render of the actual master. Ground plane hidden; no shadow catcher or baked background.",
+    "crop": [
+      105,
+      176,
+      1350,
+      946
+    ],
+    "samples": 24,
+    "alpha_border_max": 0
+  },
+  {
+    "file": "kyoto.webp",
+    "dimensions": [
+      1245,
+      770
+    ],
+    "bytes": 62272,
+    "source": "Transparent model-only CPU Cycles render of the actual master. Ground plane hidden; no shadow catcher or baked background.",
+    "crop": [
+      105,
+      176,
+      1350,
+      946
+    ],
+    "samples": 24,
+    "alpha_border_max": 0
+  },
+  {
+    "file": "lisbon.webp",
+    "dimensions": [
+      1245,
+      770
+    ],
+    "bytes": 59546,
+    "source": "Transparent model-only CPU Cycles render of the actual master. Ground plane hidden; no shadow catcher or baked background.",
+    "crop": [
+      105,
+      176,
+      1350,
+      946
+    ],
+    "samples": 24,
+    "alpha_border_max": 0
+  },
+  {
+    "file": "almaty.webp",
+    "dimensions": [
+      1245,
+      770
+    ],
+    "bytes": 53908,
+    "source": "Transparent model-only CPU Cycles render of the actual master. Ground plane hidden; no shadow catcher or baked background.",
+    "crop": [
+      105,
+      176,
+      1350,
+      946
+    ],
+    "samples": 24,
+    "alpha_border_max": 0
+  }
+]
