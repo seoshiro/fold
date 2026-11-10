@@ -17,15 +17,17 @@ def pose(p,city):
  for o in bpy.data.objects:
   if 'fold_closed' in o:o.rotation_euler.x=float(o['fold_closed'])*(1-p)
   if o.name.startswith('COVER_'):o.rotation_euler.x=float(o['fold_open'])*p
-if '--details' in sys.argv:
+if '--details' in sys.argv or '--underside-only' in sys.argv:
  from mathutils import Vector
  pose(1,'kyoto');s.cycles.samples=24;s.render.resolution_x=1000;s.render.resolution_y=750
  conditions={'source':'model/fold-master.blend','city':'kyoto','pose':1.0,'engine':'Cycles CPU','blender':bpy.app.version_string,'samples':24,'denoising':False,'resolution':[1000,750],'threads':s.render.threads,'thread_mode':s.render.threads_mode,'views':[]}
  cam=s.camera;cam.location=(3.5,-4.2,3.3);target=Vector((2.0,-1.4,1.0));cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=2.6
  conditions['views'].append({'file':'paper-closeup.png','camera':list(cam.location),'target':list(target),'orthographic_scale':cam.data.ortho_scale})
- s.render.filepath=str(ROOT/'model/proof/paper-closeup.png');bpy.ops.render.render(write_still=True)
+ s.render.filepath=str(ROOT/'model/proof/paper-closeup.png')
+ if '--underside-only' not in sys.argv:bpy.ops.render.render(write_still=True)
+ bpy.data.objects['RENDER_ground'].hide_render=True;s.render.film_transparent=True
  cam.location=(3,-8,.50);target=Vector((.6,-.3,1.45));cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.ortho_scale=9.8
- conditions['views'].append({'file':'wing-underside.png','camera':list(cam.location),'target':list(target),'orthographic_scale':cam.data.ortho_scale})
+ conditions['views'].append({'file':'wing-underside.png','ground_hidden_for_inspection':True,'transparent_film':True,'camera':list(cam.location),'target':list(target),'orthographic_scale':cam.data.ortho_scale})
  s.render.filepath=str(ROOT/'model/proof/wing-underside.png');bpy.ops.render.render(write_still=True)
  import json,hashlib
  conditions['source_sha256']=hashlib.sha256((ROOT/'model/fold-master.blend').read_bytes()).hexdigest()

@@ -220,7 +220,7 @@ export class FoldScene {
   rotate(delta: number) { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { dragX: clamp(this.pose.dragX + delta, -.34, .34), duration: this.target.reducedMotion ? .1 : .4, onUpdate: () => this.invalidate() }); }
   zoom(delta: number) { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { zoom: clamp(this.pose.zoom + delta, .82, 1.32), duration: .3, onUpdate: () => this.invalidate() }); }
   get isDragging() { return !!this.pointer?.moved || performance.now() < this.suppressUntil; }
-  getStats() { return { ...this.stats, state: this.state, asset: { expectedRevision: MODEL_REVISION, primitiveMeshes: this.stats.meshes, covers: this.covers.map(c => ({ name: c.node.name, foldOpen: c.open, pivot: c.node.position.toArray(), currentRotationX: c.node.rotation.x })) }, pose: { ...this.pose }, renderer: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles }, size: [this.width, this.height] }; }
+  getStats() { return { ...this.stats, state: this.state, asset: { expectedRevision: MODEL_REVISION, primitiveMeshes: this.stats.meshes, covers: this.covers.map(c => ({ name: c.node.name, foldOpen: c.open, pivot: c.node.position.toArray(), currentRotationX: c.node.rotation.x })) }, pose: Object.fromEntries(Object.entries(this.pose).filter(([, value]) => typeof value === 'number')), renderer: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles }, size: [this.width, this.height] }; }
 
   /** Reproducible proof poses, shared by QA and screenshots. Does not replace normal navigation. */
   setProgress(city: CityId, progress: number) {

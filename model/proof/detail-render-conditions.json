@@ -1,0 +1,48 @@
+{
+  "source": "model/fold-master.blend",
+  "city": "kyoto",
+  "pose": 1.0,
+  "engine": "Cycles CPU",
+  "blender": "4.3.2",
+  "samples": 24,
+  "denoising": false,
+  "resolution": [
+    1000,
+    750
+  ],
+  "threads": 4,
+  "thread_mode": "FIXED",
+  "views": [
+    {
+      "file": "paper-closeup.png",
+      "camera": [
+        3.5,
+        -4.199999809265137,
+        3.299999952316284
+      ],
+      "target": [
+        2.0,
+        -1.399999976158142,
+        1.0
+      ],
+      "orthographic_scale": 2.5999999046325684
+    },
+    {
+      "file": "wing-underside.png",
+      "ground_hidden_for_inspection": true,
+      "transparent_film": true,
+      "camera": [
+        3.0,
+        -8.0,
+        0.5
+      ],
+      "target": [
+        0.6000000238418579,
+        -0.30000001192092896,
+        1.4500000476837158
+      ],
+      "orthographic_scale": 9.800000190734863
+    }
+  ],
+  "source_sha256": "80c673bbb3bf7fb964903c02ad64d855cbaf0da2ea664ed8703f6b7afaf95f79"
+}
