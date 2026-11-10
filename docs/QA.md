@@ -2,13 +2,15 @@
 
 ## Current result
 
-Checked public preview https://seoshiro.github.io/fold/ on 2026-11-10. Final code snapshot: `2397591342b02ab36f6947bd8a182d0e4ead9285`, confirmed in the browser as `index-vhscoSH7.js`.
+Checked public preview https://seoshiro.github.io/fold/ on 2026-11-10. Most recent browser-checked code snapshot: `2397591342b02ab36f6947bd8a182d0e4ead9285`, confirmed in the browser as `index-vhscoSH7.js`.
 
 - Functional checks cover all three cities and nine stories, saving/removing/reloading, EN/RU/KK selection preservation, deep links, history, Escape, guided walks, Notes and fallback recovery. Version-specific details are below.
 - Reported focus, dialog trapping, narrow-home layout, mobile targets and tab keyboard defects were corrected and retested.
 - Actual WebGL screenshots cover the current-model home, three city endpoints and mobile layouts. The final Kyoto screenshot uses the final directional lighting. Static inspection is explicitly labeled and does not establish animation quality.
 - Final asset diagnostics confirm the revised model: 1,320,752 bytes, revision `076641059a3e`, 351 primitive meshes, Kyoto cover opening -3.02 radians and pivot y≈0.18. Numeric pose diagnostics serialize correctly.
 - **No continuous normal-speed video or valid foreground performance benchmark was obtained.** The recorded RAF intervals were heavily throttled. Reduced motion, native 200% zoom, physical phones and Safari remain unverified.
+
+A subsequent source-level continuity patch animates the live focus anchor and keeps a visible story origin fixed until folded. Seven deterministic tests exercise the real GSAP/scene methods: settled and rapid Walk changes, city switching, home return, interrupted story changes, canceled relocation and reduced motion. All14 unit tests and TypeScript pass. Geometry, lighting and settled endpoints are unchanged. This patch has not been rechecked in a foreground browser recording.
 
 This is an evidence-based preview report, not a claim that every requested acceptance test passed.
 
@@ -84,3 +86,11 @@ Sample frame intervals runs for20s with independent wall-clock completion and a 
 ## Remaining limits
 
 Unverified: continuous normal-speed desktop/mobile/interruption videos; representative foreground frame timing; exact intro/transition durations; full final viewport matrix; native200% zoom; reduced-motion mode; real touch devices; Safari; slow/resource-error loading and real WebGL-context-loss recovery. No black-screen guarantee is inferred from sampled screenshots. Temporary viewport overrides were reset after testing, and the public homepage was left open.
+
+## Follow-up: cloud browser and restored laptop window
+
+A fresh cloud-browser check of `index-vhscoSH7.js` confirmed `data-scene=fallback` and no canvas. WebGL initialization reported `GL_VENDOR = Disabled`, `GL_RENDERER = Disabled` and `BindToCurrentSequence failed`. This is a limitation of that browser environment, not evidence that hardware WebGL is broken.
+
+Kyoto → Gion, EN → RU, save and reload worked in that cloud session. The test-added Gion item was removed; the initial Kazakh language and previously saved item were restored. [Cloud screenshot](media/cloud-fallback-gion-ru.jpg) shows the explicitly labeled paper edition, not interactive 3D.
+
+The laptop Chrome window was then restored normally and reported maximized/focused. The following attempt to inspect that ordinary window was stopped because the browser-control environment could not reliably identify its current URL. No capture dialog was retried, and no new measurement or recording was started. The earlier throttled sample remains invalid; restoring the window alone is not a new performance result.

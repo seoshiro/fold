@@ -34,7 +34,7 @@ export class FoldScene {
   private neckPivot = new THREE.Group();
   private tailPivot = new THREE.Group();
   private target: FoldTarget = { city: null, place: null, reducedMotion: false };
-  private pose = { wing: 0, kyoto: 0, lisbon: 0, almaty: 0, story: 0, view: 0, intro: 1, dragX: 0, dragY: 0, zoom: 1, focus: 0 };
+  private pose = { wing: 0, kyoto: 0, lisbon: 0, almaty: 0, story: 0, view: 0, intro: 1, dragX: 0, dragY: 0, zoom: 1, focus: 0, focusX: 0, focusY: 0, focusZ: 0, storyX: 0, storyZ: 0 };
   private transition: gsap.core.Timeline | null = null;
   private viewTween: gsap.core.Tween | null = null;
   private raf = 0;
@@ -50,6 +50,7 @@ export class FoldScene {
   private suppressUntil = 0;
   private stats = { frames: 0, draws: 0, triangles: 0, meshes: 0, geometries: 0, loadMs: 0, assetBytes: 0 };
   private projected = new THREE.Vector3();
+  private focusPoint = new THREE.Vector3();
   private lastAnchorHash = '';
   private onPointerDown = (e: PointerEvent) => this.pointerDown(e);
   private onPointerMove = (e: PointerEvent) => this.pointerMove(e);
@@ -122,7 +123,7 @@ export class FoldScene {
         const id = o.name.slice(5) as CityId; this.cityRoots.set(id, o); this.hinges.set(id, []); o.visible = false;
       }
       if (o.name.startsWith('ANCHOR_')) this.anchors.set(o.name.slice(7), o);
-      if (o.name === 'STORY_TAB') { this.story = o; this.storyOriginal.copy(o.position); o.visible = false; }
+      if (o.name === 'STORY_TAB') { this.story = o; this.storyOriginal.copy(o.position); this.pose.storyX = o.position.x; this.pose.storyZ = o.position.z; o.visible = false; }
       if ((o as THREE.Mesh).isMesh) {
         const mesh = o as THREE.Mesh; mesh.castShadow = true; mesh.receiveShadow = true; this.stats.meshes++;
         const ms = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
@@ -173,6 +174,39 @@ export class FoldScene {
     const parent = node.parent; parent.add(pivot); pivot.position.copy(point); pivot.updateMatrixWorld(true); pivot.attach(node);
   }
 
+  private focusDestination(next: FoldTarget): THREE.Vector3 | null {
+    if (!next.city || next.focus == null) return null;
+    const anchor = this.anchors.get(`${next.city}-poi-${next.focus}`);
+    if (!anchor) return null;
+    // Orbit-local coordinates retain the old endpoint and follow deliberate dragging.
+    // Unlike the selected anchor ID, these coordinates can be tweened from the live pose.
+    const point = anchor.getWorldPosition(new THREE.Vector3());
+    return this.orbit.worldToLocal(point);
+  }
+  private storyDestination(next: FoldTarget): THREE.Vector3 | null {
+    if (!next.city || next.place === null || !this.story?.parent) return null;
+    const anchor = this.anchors.get(`${next.city}-poi-${next.place}`);
+    if (!anchor) return this.storyOriginal.clone();
+    const point = this.story.parent.worldToLocal(anchor.getWorldPosition(new THREE.Vector3()));
+    return new THREE.Vector3(point.x + .10, this.storyOriginal.y, point.z + .07);
+  }
+  private animateStory(timeline: gsap.core.Timeline, next: FoldTarget, changingCity: boolean, duration: number) {
+    const destination = this.storyDestination(next);
+    if (!destination) {
+      // Retain the actual origin throughout closing. Resetting it here teleports a visible sheet.
+      timeline.to(this.pose, { story: 0, duration: .25 * duration, ease: 'power2.in' }, 0);
+      return;
+    }
+    const movingOrigin = Math.abs(this.pose.storyX - destination.x) > 1e-6 || Math.abs(this.pose.storyZ - destination.z) > 1e-6;
+    const closeFirst = this.pose.story > 0 && (movingOrigin || changingCity);
+    const closedAt = closeFirst ? .25 * duration : 0;
+    if (closeFirst) timeline.to(this.pose, { story: 0, duration: closedAt, ease: 'power2.in' }, 0);
+    // A replacement timeline kills this pending relocation too. The origin changes only
+    // at story=0, so interruptions always continue from the last physically displayed sheet.
+    if (movingOrigin) timeline.set(this.pose, { storyX: destination.x, storyZ: destination.z, immediateRender: false }, closedAt);
+    timeline.to(this.pose, { story: 1, duration: .70 * duration, ease: 'power2.inOut' }, Math.max(closedAt, (changingCity ? 1.25 : .03) * duration));
+  }
+
   setTarget(next: FoldTarget, force = false) {
     const prev = this.target;
     this.target = { ...next, focus: next.focus ?? null };
@@ -197,7 +231,7 @@ export class FoldScene {
     } });
     const tl = this.transition;
     this.emit(next.city ? 'unfolding' : 'folding');
-    tl.to(this.pose, { story: 0, duration: .25 * duration, ease: 'power2.in' }, 0);
+    this.animateStory(tl, next, changingCity, duration);
     if (!next.city) {
       tl.to(this.pose, { kyoto: 0, lisbon: 0, almaty: 0, duration: .68 * duration, ease: 'power2.inOut' }, 0);
       tl.to(this.pose, { wing: 0, view: 0, focus: 0, duration: 1.05 * duration, ease: 'power2.inOut' }, .40 * duration);
@@ -206,8 +240,15 @@ export class FoldScene {
       tl.to(this.pose, { ...others, duration: .61 * duration, ease: 'power2.inOut' }, 0);
       tl.to(this.pose, { wing: 1, view: 1, duration: 1.02 * duration, ease: 'power2.inOut' }, 0);
       tl.to(this.pose, { [next.city]: 1, duration: 1.18 * duration, ease: 'power2.inOut' }, (changingCity ? .50 : 0) * duration);
-      tl.to(this.pose, { focus: next.focus !== null && next.focus !== undefined ? 1 : 0, duration: .7 * duration, ease: 'power2.inOut' }, 0);
-      if (next.place !== null) tl.to(this.pose, { story: 1, duration: .70 * duration, ease: 'power2.inOut' }, (changingCity ? 1.25 : .03) * duration);
+      const focus = this.focusDestination(next);
+      if (focus && this.pose.focus === 0) {
+        this.pose.focusX = focus.x; this.pose.focusY = focus.y; this.pose.focusZ = focus.z;
+      }
+      tl.to(this.pose, {
+        focus: focus ? 1 : 0,
+        ...(focus ? { focusX: focus.x, focusY: focus.y, focusZ: focus.z } : {}),
+        duration: .7 * duration, ease: 'power2.inOut',
+      }, 0);
     }
     this.invalidate();
   }
@@ -272,17 +313,7 @@ export class FoldScene {
     }
     if (this.story) {
       this.story.visible = p.story > .004;
-      this.story.position.copy(this.storyOriginal);
-      if (this.target.city && this.target.place !== null) {
-        const origin = this.anchors.get(`${this.target.city}-poi-${this.target.place}`);
-        if (origin && this.story.parent) {
-          origin.getWorldPosition(this.projected);
-          this.story.parent.worldToLocal(this.projected);
-          this.story.position.x = this.projected.x + .10;
-          this.story.position.z = this.projected.z + .07;
-          this.story.position.y = this.storyOriginal.y;
-        }
-      }
+      this.story.position.set(p.storyX, this.storyOriginal.y, p.storyZ);
       this.story.rotation.x = -.15 - smooth(p.story) * 1.03;
       // Same sheet stays attached; no shrink-to-zero hiding of geometry.
       this.story.position.y += .015;
@@ -299,13 +330,11 @@ export class FoldScene {
     halfH /= this.pose.zoom;
     this.camera.left = -halfH * aspect; this.camera.right = halfH * aspect; this.camera.top = halfH; this.camera.bottom = -halfH;
     const target = new THREE.Vector3(.25 + (mobile ? 0 : v * 2.45), 1.88 - v * .10, -.20);
-    if (this.target.city && this.target.focus !== null && this.target.focus !== undefined && this.pose.focus > .001) {
-      const anchor = this.anchors.get(`${this.target.city}-poi-${this.target.focus}`);
-      if (anchor) {
-        anchor.getWorldPosition(this.projected);
-        target.x += (this.projected.x - 2.2) * .15 * this.pose.focus;
-        target.y += (this.projected.y - 1.4) * .13 * this.pose.focus;
-      }
+    if (this.pose.focus !== 0) {
+      this.focusPoint.set(this.pose.focusX, this.pose.focusY, this.pose.focusZ);
+      this.orbit.localToWorld(this.focusPoint);
+      target.x += (this.focusPoint.x - 2.2) * .15 * this.pose.focus;
+      target.y += (this.focusPoint.y - 1.4) * .13 * this.pose.focus;
     }
     const cameraOffset = new THREE.Vector3(1.3, 5.7 + (mobile ? .5 : 0) + v * .2, 12.5);
     this.camera.position.copy(target).add(cameraOffset); this.camera.lookAt(target);

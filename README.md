@@ -69,7 +69,7 @@ GitHub Pages serves `docs/` on `main`; that directory contains the checked produ
 
 ## Verification and honest limits
 
-Seven source tests cover content completeness, locale key parity, URL validation and resilient storage. Actual browser checks are recorded separately with their preview revision, conditions and remaining gaps. A successful build or screenshot is not presented as proof of smooth motion. Mobile viewport tests are emulation, not a claim of physical phone or Safari testing. Translations have not been reviewed by a native-speaker panel.
+Fourteen source tests cover content completeness, locale key parity, URL validation, resilient storage and deterministic GSAP retargeting continuity. The latter exercise actual scene methods without WebGL; they are not a browser motion recording. Actual browser checks are recorded separately with their preview revision, conditions and remaining gaps. A successful build or screenshot is not presented as proof of smooth motion. Mobile viewport tests are emulation, not a claim of physical phone or Safari testing. Translations have not been reviewed by a native-speaker panel.
 
 The public preview is available, with source models and static browser evidence. Functional flows and keyboard corrections have been checked as described in the QA log. **Final motion acceptance remains open:** no continuous browser recording was obtained, and a 20-second sample was invalidated by browser throttling. Physical-phone performance, Safari, native 200% zoom and real context-loss recovery remain unverified. See [QA status](docs/QA.md) for exact versions and evidence. No screenshot or successful build substitutes for these checks.
 
