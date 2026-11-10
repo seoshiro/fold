@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FOLD · viewport QA</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#222;color:#fff;font:14px/1.5 system-ui}header{padding:12px;position:sticky;left:0;top:0;background:#222;z-index:5}button,select,input{font:inherit;padding:6px;margin:3px}#stage{padding:0;width:max-content;min-width:100vw;display:flex;justify-content:center}iframe{border:0;display:block;background:#9b2019;flex:none}#status{max-width:1000px}body.recording header{display:none}body.recording #stage{min-width:0}#download{color:#fff}kbd{border:1px solid #ccc;padding:2px}</style>
+<header><strong>FOLD QA · viewport simulation, not a physical phone test</strong><br>
+<label>Viewport <select id="size"><option>1366×768</option><option>1440×900</option><option>1920×1080</option><option>360×800</option><option>390×844</option><option>768×1024</option><option>844×390</option></select></label>
+<button id="rotate">Rotate</button><button id="load">Cold frame load</button><button id="reload">Reload frame</button><button id="fallback">Fallback</button><button id="metrics">Frame sampler</button><button id="standard">Standard</button>
+<br><button id="record">Record this FOLD QA tab, no audio (90s)</button> <button id="stop" disabled>Stop recording</button> <a id="download" hidden>Download recording</a>
+<p id="status">The iframe has the exact CSS viewport shown above. Large viewports may extend beyond the host window. Video captures only the visible browser tab, never a cropped screenshot sequence. Select this FOLD QA tab in the sharing picker, not a window or desktop. Recording hides these controls. Stop via Alt+Shift+R, the browser sharing control, or the 90s timer.</p></header>
+<div id="stage"><iframe title="FOLD test viewport" allow="clipboard-write" id="frame" width="1366" height="768"></iframe></div>
+<script type="module">
+const $=id=>document.getElementById(id),frame=$('frame');let recorder=null,stream=null,recordUrl='',timer=0,lastSource='./';
+const status=s=>$('status').textContent=s;
+function size(){const [w,h]=$('size').value.split('×').map(Number);frame.width=String(w);frame.height=String(h);status(`Requested iframe viewport ${w}×${h} CSS pixels. Verify inner viewport in the frame sampler. This is desktop viewport simulation.`)}
+$('size').onchange=size;$('rotate').onclick=()=>{const w=frame.width;frame.width=frame.height;frame.height=w;status(`Rotated iframe viewport ${frame.width}×${frame.height}.`)};
+function load(src){lastSource=src;frame.src=src;}
+$('load').onclick=()=>{frame.contentWindow?.sessionStorage.removeItem('fold-seen');load('./');};
+$('reload').onclick=()=>frame.contentWindow?.location.reload();$('fallback').onclick=()=>load('./?fallback=1');$('metrics').onclick=()=>load('./?qa=1');$('standard').onclick=()=>load('./');
+function stop(){if(recorder&&recorder.state!=='inactive')recorder.stop();stream?.getTracks().forEach(t=>t.stop());clearTimeout(timer);document.body.classList.remove('recording');$('stop').disabled=true;}
+window.addEventListener('keydown',e=>{if(e.altKey&&e.shiftKey&&e.code==='KeyR'){e.preventDefault();stop();}});
+$('stop').onclick=stop;
+$('record').onclick=async()=>{
+ if(!navigator.mediaDevices?.getDisplayMedia||!window.MediaRecorder){status('This browser does not expose tab recording. No video was created.');return;}
+ try{
+ stream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser',frameRate:30},audio:false,preferCurrentTab:true,selfBrowserSurface:'include',surfaceSwitching:'exclude'});
+ const track=stream.getVideoTracks()[0],settings=track.getSettings();
+ if(settings.displaySurface!=='browser'){stream.getTracks().forEach(t=>t.stop());status('Stopped: only this FOLD QA browser tab may be captured. Windows and desktops are not accepted.');return;}
+ const type=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(t=>MediaRecorder.isTypeSupported(t));
+ recorder=new MediaRecorder(stream,{...(type?{mimeType:type}:{}),videoBitsPerSecond:8000000});const parts=[],began=new Date();
+ recorder.ondataavailable=e=>{if(e.data.size)parts.push(e.data)};
+ recorder.onstop=()=>{document.body.classList.remove('recording');$('record').disabled=false;$('stop').disabled=true;stream?.getTracks().forEach(t=>t.stop());clearTimeout(timer);if(recordUrl)URL.revokeObjectURL(recordUrl);recordUrl=URL.createObjectURL(new Blob(parts,{type:recorder.mimeType}));$('download').href=recordUrl;$('download').download='fold-continuous-'+began.toISOString().replace(/[:.]/g,'-')+'.webm';$('download').hidden=false;status('Continuous real-time video recorded. Capture settings: '+JSON.stringify(settings)+'. Recording frame rate is not website FPS. Inspect for missing/dropped content before claiming quality.');};
+ track.onended=stop;recorder.start(1000);$('record').disabled=true;$('stop').disabled=false;document.body.classList.add('recording');
+ // Recording survives iframe reload: capture the actual intro from a new document without editing time.
+ frame.contentWindow?.sessionStorage.removeItem('fold-seen');frame.src=lastSource;timer=setTimeout(stop,90000);
+ }catch(e){stream?.getTracks().forEach(t=>t.stop());status('No recording: '+String(e));}
+};
+load('./');
+</script></html>

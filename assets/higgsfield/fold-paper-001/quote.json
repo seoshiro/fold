@@ -1,0 +1,10 @@
+{
+  "model_id": "gpt_image_2_6",
+  "operation_count": 1,
+  "currency": "Higgsfield credits",
+  "quoted_credits": 2.75,
+  "quoted_credits_exact": 2.75,
+  "actual_credits": 2.75,
+  "charge_evidence": "Verified 2.75-credit account-balance delta matches the exact preflight quote. Full account balances are not published.",
+  "provider_invoice_available": false
+}

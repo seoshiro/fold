@@ -1,0 +1,63 @@
+{
+  "id": "gpt_image_2_6",
+  "name": "GPT Image 2.6",
+  "provider_name": "OpenAI",
+  "output_type": "image",
+  "selected_aspect_ratio": "1:1",
+  "validated_parameters": [
+    {
+      "name": "quality",
+      "required": "optional",
+      "type": "string",
+      "description": "Rendering quality.",
+      "options": [
+        "auto",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "default": "low"
+    },
+    {
+      "name": "resolution",
+      "required": "optional",
+      "type": "string",
+      "description": "Output resolution tier.",
+      "options": [
+        "1k",
+        "2k",
+        "4k"
+      ],
+      "default": "1k"
+    },
+    {
+      "name": "background",
+      "required": "optional",
+      "type": "string",
+      "description": "Background handling. Omit to keep the model default.",
+      "options": [
+        "auto",
+        "opaque",
+        "transparent"
+      ],
+      "nullable": true
+    },
+    {
+      "name": "output_format",
+      "required": "optional",
+      "type": "string",
+      "description": "Output file format. SVG does not accept reference images.",
+      "options": [
+        "png",
+        "jpeg",
+        "webp",
+        "gif",
+        "svg"
+      ],
+      "default": "png"
+    }
+  ],
+  "note": "Selected operation constraints extracted from a live model lookup. Raw service response is not published."
+}

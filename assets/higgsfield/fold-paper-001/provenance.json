@@ -1,0 +1,97 @@
+{
+  "record_version": 1,
+  "project": "FOLD",
+  "operation": "fold-paper-001",
+  "generation_count": 1,
+  "model": {
+    "id": "gpt_image_2_6",
+    "name": "GPT Image 2.6",
+    "provider": "OpenAI"
+  },
+  "generation_id": "050d8611-24a3-469c-a223-2e525135851f",
+  "prompt_file": "prompt.txt",
+  "params_file": "params.json",
+  "schema_file": "model-schema.json",
+  "parameters": {
+    "model": "gpt_image_2_6",
+    "aspect_ratio": "1:1",
+    "resolution": "2k",
+    "quality": "high",
+    "background": "opaque",
+    "output_format": "png",
+    "count": 1
+  },
+  "prompt_sha256": "af734149014c2c7d7a89fddc4bd466778fd14894fdbb8187a323cb94292e0d78",
+  "cost": {
+    "currency": "Higgsfield credits",
+    "quote": 2.75,
+    "actual": 2.75,
+    "evidence": "Verified 2.75-credit account-balance delta matches exact preflight quote; no full account balances published.",
+    "project_cap": 150,
+    "remaining_project_cap": 147.25,
+    "invoice_available": false
+  },
+  "original_asset": {
+    "file": "original.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "bytes": 5173768,
+    "sha256": "1ae4c125bf5174047ca948aae3a14827316e70f24dd0aeed9cbf6b6d0e757cdc",
+    "unchanged": true
+  },
+  "technical_processing": {
+    "script": "../../../tools/prepare_higgsfield_paper.py",
+    "record": "processing.json",
+    "summary": "Original retained; Lanczos 2048\u21921024; mean normalization to RGB 234 223 201; 15% original color variation and 85% luminance variation; symmetric cosine seam bands 24 px; archived lossless master plus WebP quality 94 for web. Height: 128 + 2*(luminance - GaussianBlur radius 2), seam correction, lossless WebP.",
+    "no_additional_generation": true
+  },
+  "derived_assets": [
+    {
+      "file": "public/textures/higgsfield-washi-albedo.webp",
+      "bytes": 113208,
+      "sha256": "3e94789fe5f34646c739a49413de5e0856adb5d887c8e024ff199aae7660ebd8",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "file": "public/textures/higgsfield-washi-height.webp",
+      "bytes": 412764,
+      "sha256": "5d42f061a55a48f59ebf2dbd47facc07671161e85f20d769138cc1f5644d8a56",
+      "size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "acceptance": {
+    "pixel_inspection": "passed with documented local tone and seam preparation",
+    "actual_site": "pending desktop WebGL QA",
+    "retry": "none; no second operation submitted or scheduled"
+  },
+  "publish_files": [
+    ".gitignore",
+    "prompt.txt",
+    "params.json",
+    "quote.json",
+    "model-schema.json",
+    "original.png",
+    "albedo-lossless.webp",
+    "processing.json",
+    "provenance.json"
+  ],
+  "publish_related_files": [
+    "docs/generation-ledger.json",
+    "docs/higgsfield.md",
+    "tools/prepare_higgsfield_paper.py",
+    "public/textures/higgsfield-washi-albedo.webp",
+    "public/textures/higgsfield-washi-height.webp"
+  ],
+  "do_not_publish": [
+    "local-receipts/"
+  ],
+  "source_rights": "Generated for this project through the user-connected Higgsfield account; subject to applicable Higgsfield/provider terms. No CC0 claim."
+}

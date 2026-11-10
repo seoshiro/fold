@@ -1,0 +1,2 @@
+# Raw provider responses are local evidence only, never publish.
+local-receipts/

@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 for p in ['public/models','public/textures','public/posters','model/proof']: (ROOT/p).mkdir(parents=True,exist_ok=True)
 random.seed(39)
+bpy.context.preferences.edit.use_global_undo=False
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 for d in list(bpy.data.materials): bpy.data.materials.remove(d)
 
@@ -27,15 +28,27 @@ for _ in range(7500):
 base[:,:,:3]=np.clip(base[:,:,:3],0,1)
 img=bpy.data.images.new('FOLD original cotton fibers',width=N,height=N,alpha=True)
 img.pixels.foreach_set(base.ravel());img.filepath_raw=str(ROOT/'public/textures/paper-fibers.png');img.file_format='PNG';img.save()
+if (ROOT/'public/textures/higgsfield-washi-albedo.webp').exists():
+ img=bpy.data.images.load(str(ROOT/'public/textures/higgsfield-washi-albedo.webp'));img.name='Approved Higgsfield washi albedo'
 
 def mat(name,color,rough=1,paper=False):
+ # Printed ink colors are specified in sRGB; Blender shader inputs are linear.
+ if name not in ['Warm cotton paper','Vermilion cyclorama']:
+  color=tuple(v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in color)
  m=bpy.data.materials.new(name);m.diffuse_color=(*color,1);m.use_nodes=True
  bs=m.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(*color,1);bs.inputs['Roughness'].default_value=rough
  if paper:
   tex=m.node_tree.nodes.new('ShaderNodeTexImage');tex.image=img;tex.extension='REPEAT'
   m.node_tree.links.new(tex.outputs['Color'],bs.inputs['Base Color'])
   bump=m.node_tree.nodes.new('ShaderNodeBump');bump.inputs['Strength'].default_value=.13;bump.inputs['Distance'].default_value=.013
-  m.node_tree.links.new(tex.outputs['Color'],bump.inputs['Height']);m.node_tree.links.new(bump.outputs['Normal'],bs.inputs['Normal'])
+  if (ROOT/'public/textures/higgsfield-washi-height.webp').exists():
+   hm=bpy.data.images.get('Higgsfield high-pass paper height')
+   if not hm:hm=bpy.data.images.load(str(ROOT/'public/textures/higgsfield-washi-height.webp'));hm.name='Higgsfield high-pass paper height';hm.colorspace_settings.name='Non-Color'
+   ht=m.node_tree.nodes.new('ShaderNodeTexImage');ht.image=hm
+   bump.inputs['Strength'].default_value=1;bump.inputs['Distance'].default_value=.007
+   m.node_tree.links.new(ht.outputs['Color'],bump.inputs['Height'])
+  else:m.node_tree.links.new(tex.outputs['Color'],bump.inputs['Height'])
+  m.node_tree.links.new(bump.outputs['Normal'],bs.inputs['Normal'])
  return m
 PAPER=mat('Warm cotton paper',(.89,.835,.735),paper=True)
 LIGHT=mat('Paper cut edge',(.94,.88,.76));SHADE=mat('Fold interior',(.70,.615,.48));INK=mat('Warm charcoal ink',(.20,.19,.16));FAINT=mat('Faded printed paths',(.47,.405,.31));RED=mat('Oxide red ink',(.53,.14,.085));ROOF=mat('Terracotta folded roof',(.59,.255,.15));GREEN=mat('Sage paper',(.30,.365,.245));LEAF=mat('Olive paper',(.46,.47,.29));GOLD=mat('Ochre paper',(.72,.50,.19));BLUE=mat('Blue-grey river ink',(.32,.42,.44));WHITE=mat('Snow paper',(.94,.90,.81));TILE=mat('Azulejo blue',(.19,.32,.41));BLACK=mat('Window recess',(.22,.225,.20));REDLEAF=mat('Maple rust paper',(.63,.21,.11))
@@ -85,14 +98,23 @@ def boxwalls(name,w,d,h,parent,material=PAPER,gable=0,roofmat=ROOF):
  # Rigid die-cut façade cards, including roof ridge, all rotate from a real baseline.
  p=hinge(name,parent,closed=math.pi/2,delay=random.uniform(.0,.12))
  verts=[(-w/2,0,0),(w/2,0,0),(w/2,0,h)]
- if gable: verts += [(0,0,h+gable)]
+ if gable and name!='Machiya': verts += [(0,0,h+gable)]
  verts += [(-w/2,0,h)]
  sheet(name+' front card',verts,material=material,parent=p)
  # Two additional folded paper facets give the front card a modest physical depth.
  sheet(name+' return fold',[(-w/2,0,0),(-w/2,d,0),(-w/2,d,h),(-w/2,0,h)],parent=p)
  sheet(name+' far wall',[(-w/2,d,0),(w/2,d,0),(w/2,d,h),(-w/2,d,h)],parent=p)
  sheet(name+' side return',[(w/2,0,0),(w/2,d,0),(w/2,d,h),(w/2,0,h)],parent=p)
- if gable:
+ if gable and name=='Machiya':
+  sheet('Machiya front eave',[(-w*.62,-.055,h),(w*.62,-.055,h),(w*.51,d*.5,h+gable*.55),(-w*.51,d*.5,h+gable*.55)],material=roofmat,parent=p)
+  sheet('Machiya back eave',[(-w*.51,d*.5,h+gable*.55),(w*.51,d*.5,h+gable*.55),(w*.62,d+.05,h),(-w*.62,d+.05,h)],material=roofmat,parent=p)
+  for k in range(9):
+   xx=(k/8-.5)*w
+   line('Machiya roof tile print',[(xx,-.055,h+.008),(xx,d*.5,h+gable*.55+.008)],SHADE,.002,p)
+  for k in range(10):
+   xx=(k/9-.5)*w*.86
+   line('Machiya timber lattice',[(xx,-.014,.03),(xx,-.014,.19)],ROOF,.002,p)
+ elif gable:
   sheet(name+' roof fold left',[(-w/2-.045,-.035,h),(0,-.035,h+gable),(0,d+.035,h+gable),(-w/2-.045,d+.035,h)],material=roofmat,parent=p)
   sheet(name+' roof fold right',[(0,-.035,h+gable),(w/2+.045,-.035,h),(w/2+.045,d+.035,h),(0,d+.035,h+gable)],material=roofmat,parent=p)
  else:sheet(name+' top paper',[(-w/2,0,h),(w/2,0,h),(w/2,d,h),(-w/2,d,h)],material=roofmat,parent=p)
@@ -114,6 +136,10 @@ sheet('Body far folds',[A,F,C,D],[[0,1,2],[1,3,2]],PAPER,B)
 sheet('Body lower folds',[A,E,D,F],[[0,1,2],[0,2,3]],SHADE,B)
 sheet('Body central pleat',[A,(-.51,-.30,1.57),(-.1,-.78,.78)],material=LIGHT,parent=B)
 line('Body mountain crease',[A,C,D],SHADE,.005,B)
+sheet('Chest folded peak',[A,(-.42,-.67,1.63),(.57,-.80,.67)],material=PAPER,parent=B)
+sheet('Chest side return',[(-.42,-.67,1.63),(.91,-.10,.76),(.57,-.80,.67)],material=LIGHT,parent=B)
+sheet('Chest inset valley',[A,(-.67,-.73,1.25),(-.42,-.67,1.63)],material=LIGHT,parent=B)
+line('Chest scored central fold',[A,(-.42,-.67,1.63),(.57,-.80,.67)],SHADE,.003,B)
 # Neck long side is broad but sharply tapered; head has two deliberate bevel faces.
 NECK=empty('CRANE_neck',MASTER)
 nb=(-1.45,-.39,.25);n1=(-1.50,-.16,1.40);n2=(-2.62,-.02,3.54);n3=(-2.89,-.13,3.59);n4=(-2.02,-.48,1.30)
@@ -134,28 +160,37 @@ line('Tail ridge',[(.35,.28,.83),(1.57,.40,4.18)],SHADE,.003,TAIL)
 FAR=empty('CRANE_far_wing',MASTER)
 sheet('Far wing mountain',[( -1.0,.24,.80),(-.20,1.48,2.78),(1.37,1.30,1.13),(.45,.28,.88)],[[0,1,3],[1,2,3]],PAPER,FAR)
 line('Far wing crease',[(-1,.24,.80),(-.20,1.48,2.78),(1.37,1.30,1.13)],SHADE,.003,FAR)
-# Fine printed topographic mountain on the far wing, composed original linework.
-for k in range(5):
+# Original engraved mountain contours seated on the far wing plane.
+fa=Vector((-1.0,.24,.80));fb=Vector((-.20,1.48,2.78));fd=Vector((.45,.28,.88))
+n=(fb-fa).cross(fd-fa).normalized()
+if n.y>0:n=-n
+for k in range(6):
  pts=[]
- for i in range(25):
-  t=i/24;x=-.63+t*1.1;y=.92+.22*math.sin(t*math.pi);z=1.63+.40*math.sin(t*math.pi)-k*.028
-  pts.append((x,y,z))
- line('Far wing topographic ink',pts,FAINT,.002,FAR)
+ for v,u in [(.12,.27),(.25,.45),(.37,.29),(.49,.42),(.65,.19)]:
+  u-=k*.012;co=fa+(fb-fa)*u+(fd-fa)*v+n*.009;pts.append(tuple(co))
+ line('Engraved mountain contour',pts,FAINT,.0028,FAR)
 
 # A continuous shared deck is physically attached to the body.
 W=empty('WING_attachment',MASTER,(-.90,-.23,.69));W.rotation_euler.y=-.17
-DECK=[(0,0,0),(4.86,.43,0),(4.47,-1.40,0),(2.23,-2.12,0),(.25,-.58,0)]
+DECK=[(0,0,0),(4.86,.43,0),(4.63,-1.95,0),(2.23,-2.50,0),(.25,-.95,0)]
 sheet('Wing continuous lower paper',DECK,material=PAPER,parent=W,thick=.013)
 sheet('Wing underside pleat',[(0,0,-.016),(4.47,-1.40,-.016),(2.1,-.75,-.09),(.25,-.58,-.016)],[[0,1,2],[0,2,3]],PAPER,W)
 for i in range(4):
  line('Wing underside structural crease',[(.16,-.38,-.023),(1.3+i*.70,-.6-i*.28,-.023)],SHADE,.003,W)
 # Three stacked folios. All stay attached to the root. They fold behind the city.
 COVERS=[]
-cover_polys=[[(0,0,0),(4.90,.43,0),(3.96,-.30,0),(.18,-.42,0)],[(0,0,0),(4.38,-.27,0),(3.55,-.94,0),(.20,-.53,0)],[(0,0,0),(3.94,-.91,0),(2.24,-2.10,0),(.25,-.58,0)]]
+cover_polys=[[(0,0,0),(4.90,.43,0),(3.96,-.30,0),(.18,-.42,0)],[(0,0,0),(4.38,-.27,0),(3.55,-.94,0),(.20,-.53,0)],[(0,0,0),(3.94,-.91,0),(2.24,-2.48,0),(.25,-.95,0)]]
 for i,city in enumerate(['kyoto','lisbon','almaty']):
- p=empty('COVER_'+city,W,(0,0,.045+i*.007));p['fold_role']='cover';p['fold_open']=-2.70+i*.22;p['fold_axis']='x'
+ p=empty('COVER_'+city,W,(0,0,.18+i*.008));p['fold_role']='cover';p['fold_open']=-3.02+i*.035;p['fold_axis']='x'
  sheet(city+' exterior folio',cover_polys[i],material=PAPER,parent=p,thick=.010)
  line(city+' scored edge',cover_polys[i][:3],SHADE,.003,p)
+ # Fine original topographic print on the visible reverse of the opened folio.
+ for k in range(5):
+  pts=[]
+  for j in range(25):
+   x=2.0+j*.058;y=-.12-i*.54 + math.sin(j*.24)*.05 + k*.018
+   pts.append((x,y,-.009))
+  line('Reverse folio topographic print',pts,FAINT,.002,p)
  # restrained dashed route print, independent of real HTML city labels.
  for j in range(9):
   x=1.72+j*.105;y=(-.08-i*.59)-math.sin(j*.35)*.05
@@ -167,12 +202,21 @@ CITIES={};POI={}
 def cityroot(id):
  c=empty('CITY_'+id,W,(0,0,.025));c['city']=id;CITIES[id]=c;return c
 
+def inside_wing(x,y):
+ inside=False;j=len(DECK)-1
+ for i in range(len(DECK)):
+  xi,yi,_=DECK[i];xj,yj,_=DECK[j]
+  if (yi>y)!=(yj>y) and x<(xj-xi)*(y-yi)/(yj-yi)+xi:inside=not inside
+  j=i
+ return inside
+
 def river(parent,curve,wide=.15):
  # Printed multi-line water, not glossy blue plastic.
  for k in range(9):
   pts=[]
   for j in range(61):
-   t=j/60;x,y=curve(t);pts.append((x,y+(k-4)*wide/8,.018))
+   t=j/60;x,y=curve(t);y+=(k-4)*wide/8
+   if inside_wing(x,y):pts.append((x,y,.018))
   line('Printed river contour',pts,BLUE,.008 if k%3==0 else .003,parent)
 
 def tree(parent,x,y,h=.50,autumn=False):
@@ -190,6 +234,7 @@ def tree(parent,x,y,h=.50,autumn=False):
     a=k*math.pi/5;rr=r*(1 if k%2==0 else .43);verts.append((xx+rr*math.sin(a),-.005,zz+rr*math.cos(a)))
   else:
    verts=[(xx-r,0,zz),(xx-r*.68,0,zz+r*.72),(xx,0,zz+r),(xx+r*.72,0,zz+r*.7),(xx+r,0,zz),(xx+r*.65,0,zz-r*.60),(xx-r*.6,0,zz-r*.6)]
+  verts=[(vx,vy-.012-j*.009,vz) for vx,vy,vz in verts]
   sheet('Die-cut foliage',verts,material=leaf,parent=t,thick=.003)
  return t
 
@@ -207,7 +252,7 @@ def place_anchor(city,index,loc):
 # KYOTO — gabled machiya cards, layered temple roof, river and maple grove.
 K=cityroot('kyoto')
 river(K,lambda t:(1.10+3.26*t,-1.52+.58*math.sin(t*math.pi*2-.9)),.20)
-for x,y,w,h in [(1.1,-1.3,.33,.40),(1.5,-1.55,.36,.37),(1.89,-1.36,.32,.45),(2.25,-1.60,.31,.34),(2.60,-1.25,.38,.46),(3.43,-.66,.36,.42),(3.87,-.55,.33,.37)]:
+for x,y,w,h in [(1.1,-.82,.33,.40),(1.5,-1.08,.36,.37),(1.89,-1.10,.32,.45),(2.25,-1.20,.31,.34),(2.60,-.93,.38,.46),(3.43,-.66,.36,.42),(3.87,-.55,.33,.37)]:
  b=empty('Kyoto machiya foundation',K,(x,y,.035));boxwalls('Machiya',w,.10,h,b,gable=.14)
 # Temple five roof layers supported by printed die-cut tier cards.
 pag=hinge('Kyoto temple pop-up',K,(3.72,.04,.03),closed=1.57,delay=.15)
@@ -216,7 +261,7 @@ for level in range(4):
  rect('Pagoda tier front',-w*.36,w*.36,-w*.28,z,z+h,PAPER,pag)
  rect('Pagoda tier back',-w*.36,w*.36,w*.28,z,z+h,PAPER,pag)
  for xx in [-w*.25,0,w*.25]: window(pag,xx,z+.025,w=.046,h=.12,y=-w*.28-.01,material=RED)
- roof(pag,0,0,z+h,w+.20,w*.8,ROOF)
+ roof(pag,0,0,z+h,w+.20,.18,ROOF)
 line('Pagoda finial',[(0,0,.95),(0,0,1.23)],GOLD,.009,pag)
 for j in range(5):line('Finial rings',[(-.025,0,1.0+j*.035),(.025,0,1.0+j*.035)],GOLD,.005,pag)
 # Red torii card distinct from the temple motif.
@@ -238,7 +283,7 @@ for xx in [-.39,-.13,.13,.39]:
  line('Veranda timber paper strut',[(xx,0,0),(xx,0,.36)],ROOF,.014,hall)
 rect('Broad temple hall',-.46,.46,-.018,.34,.65,PAPER,hall)
 for xx in [-.35,-.18,0,.18,.35]:window(hall,xx,.40,.08,.18,material=RED)
-roof(hall,0,.04,.66,1.12,.46,ROOF)
+roof(hall,0,.04,.66,1.12,.24,ROOF)
 line('Veranda rail',[(-.52,-.10,.36),(.52,-.10,.36)],RED,.008,hall)
 for xx in [-.48,-.24,0,.24,.48]:line('Veranda posts',[(xx,-.1,.25),(xx,-.1,.40)],RED,.006,hall)
 place_anchor('kyoto',0,(2.56,-.05,.96));place_anchor('kyoto',1,(1.60,-1.50,.65));place_anchor('kyoto',2,(2.80,-1.25,.37))
@@ -247,7 +292,7 @@ place_anchor('kyoto',0,(2.56,-.05,.96));place_anchor('kyoto',1,(1.60,-1.50,.65))
 L=cityroot('lisbon')
 river(L,lambda t:(1.50+2.78*t,-1.68+.15*math.sin(t*math.pi)),.34)
 for i,(x,y,w,h) in enumerate([(1.20,-1.14,.32,.55),(1.56,-1.07,.34,.70),(1.95,-.91,.39,.61),(2.40,-.84,.33,.81),(2.81,-.77,.34,.58),(3.22,-.58,.39,.72),(3.66,-.50,.38,.51),(4.10,-.35,.31,.40),(1.7,-.22,.31,.48),(2.15,.05,.36,.57)]):
- b=empty('Lisbon stepped foundation',L,(x,y,.025));p=boxwalls('Lisbon townhouse',w,.10,h,b,material=GOLD if i%3==0 else PAPER,gable=.12)
+ b=empty('Lisbon stepped foundation',L,(x,y+.27,.025));p=boxwalls('Lisbon townhouse',w,.10,h,b,material=GOLD if i%3==0 else PAPER,gable=.12)
  if i in [1,4,6]:
   for zz in [h*.30,h*.55,h*.80]:
    for xx in [-w*.29,0,w*.29]:
@@ -262,7 +307,7 @@ line('Tram roof', [(-.28,0,.35),(.28,0,.35)],INK,.014,tram)
 line('Tram pantograph',[(-.03,0,.35),(.08,0,.51),(.13,0,.51)],INK,.006,tram)
 for offs in [-.09,.09]:line('Tram ink track',[(1.0,-1.23+offs,.02),(2.1,-1.30+offs,.02),(3.18,-.91+offs,.02)],FAINT,.005,L)
 # Maritime tower paper silhouette, not a claimed exact monument scan.
-tower=hinge('Belem-inspired paper tower',L,(3.88,-1.15,.025),closed=1.57,delay=.10)
+tower=hinge('Belem-inspired paper tower',L,(3.88,-.85,.025),closed=1.57,delay=.10)
 rect('Tower main façade',-.18,.18,0,0,.70,PAPER,tower)
 rect('Tower upper ledge',-.21,.21,-.012,.56,.61,LIGHT,tower)
 for xx in [-.17,0,.17]:
@@ -274,7 +319,7 @@ sail=hinge('Tagus folded sail',L,(3.31,-1.72,.025),closed=1.57,delay=.08)
 line('Sail mast',[(0,0,0),(0,0,.47)],SHADE,.005,sail)
 sheet('Triangular paper sail',[(0,0,.43),(.23,0,.07),(0,0,.07)],material=WHITE,parent=sail)
 for x,y,h in [(1.04,-.57,.40),(2.86,-.20,.43),(3.62,.10,.39)]:tree(L,x,y,h)
-place_anchor('lisbon',0,(2.55,-.75,.95));place_anchor('lisbon',1,(2.18,-1.32,.62));place_anchor('lisbon',2,(3.88,-1.15,.91))
+place_anchor('lisbon',0,(2.55,-.75,.95));place_anchor('lisbon',1,(2.18,-1.32,.62));place_anchor('lisbon',2,(3.88,-.85,.91))
 
 # ALMATY — layered mountain cuts, avenues, and a cathedral-inspired card.
 A=cityroot('almaty')
@@ -285,12 +330,12 @@ for layer in range(3):
  sheet('Folded mountain silhouette',peaks,material=WHITE if layer==0 else PAPER,parent=mountain)
  for x,z in [(1.1,.90),(1.84,1.17),(2.62,.87)]:
   z*=1-.21*layer
-  sheet('Mountain facet',[(x-.28,0,z*.65),(x,0,z),(x+.14,0,z*.44)],material=LIGHT if layer==0 else SHADE,parent=mountain)
-  line('Mountain scored ridge',[(x,0,z),(x+.14,0,z*.44)],SHADE,.0025,mountain)
+  sheet('Mountain facet',[(x-.28,-.012,z*.65),(x,-.012,z),(x+.14,-.012,z*.44)],material=LIGHT if layer==0 else SHADE,parent=mountain)
+  line('Mountain scored ridge',[(x,-.020,z),(x+.14,-.020,z*.44)],SHADE,.0025,mountain)
 for x,y,w,h in [(1.2,-1.25,.40,.32),(1.71,-1.14,.44,.39),(2.23,-1.02,.36,.36),(3.62,-1.02,.43,.31)]:
  b=empty('Almaty avenue foundation',A,(x,y,.03));boxwalls('Almaty avenue building',w,.10,h,b,gable=0,roofmat=LIGHT)
 # Cathedral keeps Kazakhstan-specific tiered bell tower + warm gold silhouette.
-cat=hinge('Ascension-inspired cathedral',A,(2.93,-1.25,.03),closed=1.57,delay=.18)
+cat=hinge('Ascension-inspired cathedral',A,(2.93,-.80,.03),closed=1.57,delay=.18)
 rect('Cathedral ivory façade',-.29,.29,0,0,.48,PAPER,cat)
 for xx in [-.22,.22]:
  rect('Cathedral side tower',xx-.095,xx+.095,-.004,0,.61,PAPER,cat)
@@ -307,11 +352,11 @@ line('Central gold cross',[(0,0,1.21),(0,0,1.39)],GOLD,.006,cat)
 line('Central crossbar',[(-.04,0,1.33),(.04,0,1.33)],GOLD,.006,cat)
 for x,y,h in [(1.04,-.64,.43),(1.43,-.75,.50),(1.96,-.61,.49),(2.32,-.66,.51),(3.35,-1.41,.43),(3.76,-.48,.44),(4.12,-.70,.38)]:tree(A,x,y,h)
 # Fine avenue paths.
-for off in [-.07,.07]:line('Green avenue print',[(.9,-1.65+off,.02),(2.5,-1.51+off,.02),(4.08,-1.0+off,.02)],FAINT,.004,A)
+for off in [-.07,.07]:line('Green avenue print',[(1.2,-1.45+off,.02),(2.5,-1.51+off,.02),(4.08,-1.0+off,.02)],FAINT,.004,A)
 marketbase=empty('Green Bazaar foundation',A,(1.76,-.51,.03))
 market=boxwalls('Green Bazaar long market hall',.95,.13,.32,marketbase,gable=.10,roofmat=GREEN)
 for xx in [-.38,-.19,0,.19,.38]:window(market,xx,.07,.11,.18,material=GREEN)
-place_anchor('almaty',0,(2.93,-1.25,1.42));place_anchor('almaty',1,(1.76,-.51,.58));place_anchor('almaty',2,(3.00,.08,1.42))
+place_anchor('almaty',0,(2.93,-.80,1.42));place_anchor('almaty',1,(1.76,-.51,.58));place_anchor('almaty',2,(3.00,.08,1.42))
 
 # Story tab physically emerges from the selected place. HTML owns readable story.
 ST=empty('STORY_TAB',W,(3.70,-1.18,.04));ST['fold_role']='story'
@@ -346,8 +391,8 @@ world=bpy.data.worlds.new('Soft warm environment');scene.world=world;world.use_n
 
 def area(name,loc,power,size,color):
  d=bpy.data.lights.new(name,'AREA');d.energy=power;d.shape='DISK';d.size=size;d.color=color;o=bpy.data.objects.new(name,d);bpy.context.collection.objects.link(o);o.location=loc;o.rotation_euler=(Vector((0,0,1))-o.location).to_track_quat('-Z','Y').to_euler()
-area('RENDER_softbox',(-4,-5,9),1100,6,(1,.89,.75));area('RENDER_fill',(3,3,6),450,5,(.86,.90,1))
-bpy.ops.object.camera_add(location=(1.55,-14.5,8.2));cam=bpy.context.object;cam.name='RENDER_camera';cam.rotation_euler=(Vector((.25,0,1.75))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=11.6;scene.camera=cam
+area('RENDER_softbox',(-4,-5,9),850,6,(1,.89,.75));area('RENDER_fill',(3,3,6),450,5,(.86,.90,1))
+bpy.ops.object.camera_add(location=(1.55,-14.5,9.2));cam=bpy.context.object;cam.name='RENDER_camera';cam.rotation_euler=(Vector((.25,0,1.75))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=11.6;scene.camera=cam
 scene.render.engine='CYCLES';scene.cycles.samples=32;scene.cycles.use_denoising=False
 scene.render.resolution_x=1500;scene.render.resolution_y=1100;scene.render.resolution_percentage=100
 scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast'
@@ -385,6 +430,7 @@ if '--proof' in sys.argv:
  for i,p in enumerate([0,.25,.5,.75,1]):
   pose(p);scene.render.filepath=str(ROOT/f'model/proof/hinge-{i*25:03d}.png');bpy.ops.render.render(write_still=True)
 if '--render' in sys.argv:
- scene.render.resolution_x=1500;scene.render.resolution_y=1100;scene.cycles.samples=32
+ scene.render.film_transparent=True;ground.is_shadow_catcher=True
+ scene.render.resolution_x=1500;scene.render.resolution_y=1100;scene.cycles.samples=64
  for id in ['crane','kyoto','lisbon','almaty']:
   pose(0 if id=='crane' else 1,id if id!='crane' else 'kyoto');scene.render.filepath=str(ROOT/f'public/posters/{id}.png');bpy.ops.render.render(write_still=True)

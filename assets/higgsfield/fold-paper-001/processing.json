@@ -1,0 +1,60 @@
+{
+  "processing": "Original retained; Lanczos 2048\u21921024; mean normalization to RGB 234 223 201; 15% original color variation and 85% luminance variation; symmetric cosine seam bands 24 px; archived lossless master plus WebP quality 94 for web. Height: 128 + 2*(luminance - GaussianBlur radius 2), seam correction, lossless WebP.",
+  "original": {
+    "mean_rgb": [
+      232.6904275417328,
+      216.45947408676147,
+      188.65978693962097
+    ],
+    "std_rgb": [
+      2.414268777630238,
+      2.8329261570978006,
+      3.5962441982606057
+    ],
+    "edge_mean_abs_lr": 2.97900390625,
+    "edge_mean_abs_tb": 3.4734700520833335
+  },
+  "web_albedo": {
+    "mean_rgb": [
+      233.39502716064453,
+      223.38264274597168,
+      201.2278413772583
+    ],
+    "std_rgb": [
+      2.379416811835201,
+      2.3915818738752734,
+      2.6654427978069037
+    ],
+    "edge_mean_abs_lr": 0.7854817708333334,
+    "edge_mean_abs_tb": 0.7985026041666666
+  },
+  "assets": [
+    {
+      "file": "assets/higgsfield/fold-paper-001/original.png",
+      "bytes": 5173768,
+      "sha256": "1ae4c125bf5174047ca948aae3a14827316e70f24dd0aeed9cbf6b6d0e757cdc",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "file": "public/textures/higgsfield-washi-albedo.webp",
+      "bytes": 113208,
+      "sha256": "3e94789fe5f34646c739a49413de5e0856adb5d887c8e024ff199aae7660ebd8",
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "file": "public/textures/higgsfield-washi-height.webp",
+      "bytes": 412764,
+      "sha256": "5d42f061a55a48f59ebf2dbd47facc07671161e85f20d769138cc1f5644d8a56",
+      "size": [
+        1024,
+        1024
+      ]
+    }
+  ]
+}

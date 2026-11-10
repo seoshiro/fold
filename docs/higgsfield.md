@@ -1,22 +1,31 @@
-# Higgsfield material provenance
+# Higgsfield paper provenance
 
-FOLD has a separate approved cap of **150 Higgsfield credits**, including retries. No credits or subscriptions may be purchased. The cap is a ceiling, not a target.
+FOLD used **one generation costing 2.75 Higgsfield credits**, within its separate 150-credit cap. Remaining project allowance: **147.25 credits**. No repeat generation, credit purchase or subscription purchase was made.
 
-## Paper 001: prepared
+## Generation
 
-Purpose: a warm ivory washi albedo for the actual Blender crane. The existing deterministic texture has a noticeably regular grain and is retained as a fallback. This single generation is a candidate for more natural, restrained paper fibers. It is not a crane model, city model, or replacement for the Blender folding mechanism.
+- Model: **GPT Image 2.6**, model ID `gpt_image_2_6`, provider OpenAI.
+- Job ID: `050d8611-24a3-469c-a223-2e525135851f`.
+- Parameters: one image, 1:1, 2k, high quality, opaque PNG. The complete exact prompt and parameters are in `assets/higgsfield/fold-paper-001/prompt.txt` and `params.json`.
+- Exact preflight quote: **2.75 credits**. Actual debit: **2.75 credits**, verified by the matching account-balance delta. Full account balances are not published. No provider invoice was available.
+- Original: `assets/higgsfield/fold-paper-001/original.png`, 2048×2048 RGB, 5,173,768 bytes, preserved unchanged. SHA-256: `1ae4c125bf5174047ca948aae3a14827316e70f24dd0aeed9cbf6b6d0e757cdc`.
 
-Live model lookup: `gpt_image_2_6`, named **GPT Image 2.6**, provider OpenAI. Parameters are high quality, 2k resolution, 1:1, opaque PNG, one output. Current exact preflight quote: **2.75 credits**. No generation has yet been submitted. Full prompt, parameters, quote and model schema are saved under `assets/higgsfield/fold-paper-001/`.
+## Preparation and outputs
 
-Immutable visual constraints: warm ivory, neutral uniform illumination, sparse fine irregular fibers, no objects/text/stains/folds, no baked shadows/highlights, no plastic sheen. Technical seam correction, tone normalization and deriving bump/roughness from the original are allowed and must be recorded, not described as new AI generations.
+The purpose was a subtle washi surface for the actual Blender crane. The image contains fine irregular cellulose-like fibers, no lettering, objects, folds or baked directional shadows. The original was slightly too yellow and its edges were not exactly matched. These issues were corrected locally without another generation.
 
-## Acceptance gates
+`tools/prepare_higgsfield_paper.py` performs deterministic Lanczos downsampling, normalization toward warm ivory RGB 234/223/201, restrained color variation, and 24px cosine edge blending. The original and an exact-seam working master remain available. The script requires Python, Pillow and NumPy and makes no external calls.
 
-1. Inspect the original at full texture scale for genuine fine cellulose-like irregularity, no text/objects or baked folds.
-2. Quantify tone range and opposite-edge differences. Retain original without modification.
-3. Derive web-resolution assets only as needed; record their exact processing and hashes.
-4. Evaluate a close-up and overall view in the actual site's red lighting, closed and unfolded. It must improve subtle paper, not add visible noise or a plastic emboss effect.
-5. Accept a good result. A retry requires a concrete material flaw observed in the site and a new price check. Two similar failures require a changed approach.
+- Runtime albedo: `public/textures/higgsfield-washi-albedo.webp`, 1024², **113,208 bytes**, WebP quality 94, sRGB. Mean opposite-edge mismatch is below 0.8/255 after compression.
+- Optional height: `public/textures/higgsfield-washi-height.webp`, 1024², 412,764 bytes. A high-pass luminance derivative, not measured physical depth. Use linear color space and restrained bump strength only if it improves the site.
+- Exact processing, dimensions, file sizes and SHA-256 hashes: `assets/higgsfield/fold-paper-001/processing.json`.
 
-`docs/generation-ledger.json` is the spending record. A price quote is not a charge. Balance deltas will be identified as reconciliation, not a provider invoice.
+## Acceptance
 
+**Texture inspection is complete; actual site acceptance remains pending desktop WebGL QA.** Closed, intermediate, unfolded and close-up views must be checked in the site's lighting for seams, sparkle, plastic-looking relief and loading cost. No second generation has been submitted or scheduled. A future retry requires a concrete flaw, a current quote, and sufficient remaining project allowance.
+
+The paper was generated for this project through the user's connected Higgsfield account, subject to applicable Higgsfield/provider terms. No third-party paper photograph or city mesh was copied; no CC0 claim is made.
+
+## Publication record
+
+`assets/higgsfield/fold-paper-001/provenance.json` is the sanitized publication manifest and includes a file allowlist. Raw service receipts are retained locally in the git-ignored `local-receipts/` directory and **must not be published**. Public records contain no service download URLs, account-balance values or credentials. `docs/generation-ledger.json` records the project spend separately from earlier projects.

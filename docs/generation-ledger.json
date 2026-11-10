@@ -11,7 +11,7 @@
     {
       "id": "fold-paper-001",
       "purpose": "Warm ivory fine washi fibers for the actual folding crane surface; replace visibly directional procedural fibers only if in-site evaluation improves material.",
-      "status": "submitted_pending",
+      "status": "completed_pending_site_evaluation",
       "model_id": "gpt_image_2_6",
       "model_name": "GPT Image 2.6",
       "provider": "OpenAI",
@@ -37,11 +37,32 @@
       "params_file": "assets/higgsfield/fold-paper-001/params.json",
       "quote_file": "assets/higgsfield/fold-paper-001/quote.json",
       "schema_file": "assets/higgsfield/fold-paper-001/model-schema.json",
-      "original_file": null,
-      "decision": "pending_generation_and_site_evaluation",
-      "site_evaluation": null,
+      "original_file": "assets/higgsfield/fold-paper-001/original.png",
+      "decision": "Candidate passes texture inspection only. Actual site acceptance pending desktop WebGL QA; no further generation submitted or scheduled.",
+      "site_evaluation": {
+        "status": "pending",
+        "scope": "Desktop WebGL QA in actual site lighting, including closed, intermediate, open, and close-up views."
+      },
       "submitted_at": "2026-11-10T11:58:51.780929+00:00",
-      "charge_evidence": "Exact preflight 2.75 credits; account balance 492.75 before and 490 after this sole submitted operation. No invoice endpoint is exposed."
+      "charge_evidence": "Verified 2.75-credit account-balance delta matches the exact preflight quote. No account balances or provider invoice are published.",
+      "web_albedo": "public/textures/higgsfield-washi-albedo.webp",
+      "optional_height": "public/textures/higgsfield-washi-height.webp",
+      "processing_file": "assets/higgsfield/fold-paper-001/processing.json",
+      "image_evaluation": {
+        "passed": [
+          "fine irregular cellulose grain",
+          "no objects, lettering, fold lines, stains, baked directional shadow or highlight",
+          "uniform surface with restrained luminance variation",
+          "original retained unchanged",
+          "web derivative is 1024 square, 113208 bytes, edge differences less than 0.8 per channel out of 255"
+        ],
+        "corrected_locally": [
+          "original was too yellow: mean RGB 232.69,216.46,188.66; normalized toward 234,223,201",
+          "original opposite edges not pixel-identical; technical 24px cosine blend followed by quality-94 WebP"
+        ],
+        "failed": []
+      },
+      "provenance_file": "assets/higgsfield/fold-paper-001/provenance.json"
     }
   ]
 }

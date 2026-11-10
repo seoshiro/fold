@@ -62,22 +62,32 @@ export class FoldScene {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.6 : 1.8));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.17;
+    this.renderer.toneMappingExposure = 1.12;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.VSMShadowMap;
     this.scene.add(this.orbit);
-    const sky = new THREE.HemisphereLight(0xfff8e9, 0x652013, 2.0);
+    const sky = new THREE.HemisphereLight(0xfff8e9, 0x652013, 1.6);
     this.scene.add(sky);
-    const key = new THREE.DirectionalLight(0xffefce, 3.8);
+    const key = new THREE.DirectionalLight(0xffefce, 2.6);
     key.position.set(-3.5, 8, 5); key.castShadow = true;
-    key.shadow.mapSize.set(window.innerWidth < 700 ? 1024 : 2048, window.innerWidth < 700 ? 1024 : 2048);
+    key.shadow.mapSize.set(window.innerWidth < 700 ? 512 : 1024, window.innerWidth < 700 ? 512 : 1024);
     Object.assign(key.shadow.camera, { left: -7, right: 7, top: 6, bottom: -5, near: .1, far: 25 });
-    key.shadow.bias = -.00035; key.shadow.normalBias = .018; key.shadow.radius = 3;
+    key.shadow.bias = -.00035; key.shadow.normalBias = .018; key.shadow.radius = 7; key.shadow.blurSamples = 10;
     this.scene.add(key);
     const fill = new THREE.DirectionalLight(0xd9e1ee, .85); fill.position.set(4, 5, -5); this.scene.add(fill);
-    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ color: 0x2a0703, opacity: .30 }));
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ color: 0x2a0703, opacity: .13 }));
     shadow.name = 'Contact shadow receiver'; shadow.rotation.x = -Math.PI / 2; shadow.position.y = .005; shadow.receiveShadow = true;
     this.scene.add(shadow);
+    // Broad indirect contact, independent of the crisp directional cast shadow.
+    const contactCanvas = document.createElement('canvas'); contactCanvas.width = contactCanvas.height = 128;
+    const contactContext = contactCanvas.getContext('2d');
+    if (contactContext) {
+      const gradient = contactContext.createRadialGradient(64, 64, 2, 64, 64, 62);
+      gradient.addColorStop(0, 'rgba(31, 4, 2, 0.34)'); gradient.addColorStop(.45, 'rgba(31, 4, 2, 0.17)'); gradient.addColorStop(1, 'rgba(31, 4, 2, 0)');
+      contactContext.fillStyle = gradient; contactContext.fillRect(0, 0, 128, 128);
+      const contact = new THREE.Mesh(new THREE.PlaneGeometry(8.0, 4.0), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(contactCanvas), transparent: true, depthWrite: false, opacity: .78 }));
+      contact.name = 'Soft indirect paper contact'; contact.rotation.x = -Math.PI / 2; contact.position.set(.2, .012, .6); this.scene.add(contact);
+    }
     this.canvas.style.touchAction = 'pan-y';
     this.canvas.addEventListener('pointerdown', this.onPointerDown);
     this.canvas.addEventListener('pointermove', this.onPointerMove);
@@ -86,10 +96,12 @@ export class FoldScene {
     this.canvas.addEventListener('webglcontextlost', this.onLost);
     this.resize();
     const start = performance.now();
-    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/fold-master.glb`, gltf => {
+    new GLTFLoader().load(`${import.meta.env.BASE_URL}models/fold-master.glb`, async gltf => {
       if (this.disposed) { this.disposeObject(gltf.scene); return; }
       this.model = gltf.scene; this.orbit.add(this.model);
       this.prepareModel();
+      await this.preparePaper();
+      if (this.disposed) return;
       this.stats.loadMs = Math.round(performance.now() - start);
       this.ready = true;
       this.applyPose(); this.render();
@@ -116,6 +128,7 @@ export class FoldScene {
         for (const m of ms) {
           const p = m as THREE.MeshStandardMaterial;
           p.roughness = 1; p.metalness = 0;
+          if (p.name === 'Warm cotton paper' && p.normalMap) { p.normalMap.dispose(); p.normalMap = null; }
           if (p.map) { p.map.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy(), 4); }
           p.side = THREE.FrontSide; // The mesh has an actual closed underside; no duplicate double-sided shading.
         }
@@ -128,6 +141,32 @@ export class FoldScene {
     this.attachPivot('CRANE_neck', this.neckPivot, new THREE.Vector3(-1.45, .25, .39));
     this.attachPivot('CRANE_tail', this.tailPivot, new THREE.Vector3(.35, .83, -.28));
   }
+  private async preparePaper() {
+    // Approved single Higgsfield washi generation, documented in the asset ledger.
+    // The embedded original texture remains a usable fallback if this optional enhancement fails.
+    try {
+      const loader = new THREE.TextureLoader();
+      const [albedo, height] = await Promise.all([
+        loader.loadAsync(`${import.meta.env.BASE_URL}textures/higgsfield-washi-albedo.webp`),
+        loader.loadAsync(`${import.meta.env.BASE_URL}textures/higgsfield-washi-height.webp`),
+      ]);
+      albedo.colorSpace = THREE.SRGBColorSpace;
+      for (const t of [albedo, height]) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.flipY = false; t.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy(), 4); }
+      if (this.disposed) { albedo.dispose(); height.dispose(); return; }
+      const originals = new Set<THREE.Texture>();
+      this.model.traverse(o => {
+        if (!(o as THREE.Mesh).isMesh) return;
+        const mesh = o as THREE.Mesh;
+        for (const m of (Array.isArray(mesh.material) ? mesh.material : [mesh.material])) {
+          const paper = m as THREE.MeshStandardMaterial;
+          if (!paper.name.startsWith('Warm cotton paper')) continue;
+          if (paper.map && paper.map !== albedo) originals.add(paper.map);
+          paper.map = albedo; paper.bumpMap = height; paper.bumpScale = .007; paper.needsUpdate = true;
+        }
+      });
+      originals.forEach(t => t.dispose());
+    } catch { /* A failed optional texture never strands the site in loading. */ }
+  }
   private attachPivot(name: string, pivot: THREE.Group, point: THREE.Vector3) {
     const node = this.model.getObjectByName(name); if (!node || !node.parent) return;
     const parent = node.parent; parent.add(pivot); pivot.position.copy(point); pivot.updateMatrixWorld(true); pivot.attach(node);
@@ -137,7 +176,7 @@ export class FoldScene {
     const prev = this.target;
     this.target = { ...next, focus: next.focus ?? null };
     if (!this.ready || this.disposed) return;
-    if (!force && prev.city === next.city && prev.place === next.place && prev.focus === next.focus && prev.intro === next.intro && prev.reducedMotion === next.reducedMotion) return;
+    if (!force && prev.city === next.city && prev.place === next.place && (prev.focus ?? null) === (next.focus ?? null) && prev.intro === next.intro && prev.reducedMotion === next.reducedMotion) return;
     this.transition?.kill(); this.transition = null;
     const fast = next.reducedMotion;
     if (next.intro && !this.startedIntro && !next.city && !fast) {
@@ -171,6 +210,7 @@ export class FoldScene {
 
   skipIntro() { if (this.state !== 'intro') return; this.transition?.kill(); this.pose.intro = 1; this.emit('crane'); this.invalidate(); }
   resetView() { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { dragX: 0, dragY: 0, zoom: 1, duration: this.target.reducedMotion ? .1 : .65, ease: 'power2.out', onUpdate: () => this.invalidate() }); }
+  rotate(delta: number) { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { dragX: clamp(this.pose.dragX + delta, -.34, .34), duration: this.target.reducedMotion ? .1 : .4, onUpdate: () => this.invalidate() }); }
   zoom(delta: number) { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { zoom: clamp(this.pose.zoom + delta, .82, 1.32), duration: .3, onUpdate: () => this.invalidate() }); }
   get isDragging() { return !!this.pointer?.moved || performance.now() < this.suppressUntil; }
   getStats() { return { ...this.stats, state: this.state, pose: { ...this.pose }, renderer: { calls: this.renderer.info.render.calls, triangles: this.renderer.info.render.triangles }, size: [this.width, this.height] }; }
@@ -213,7 +253,7 @@ export class FoldScene {
     this.orbit.rotation.y = p.dragX + p.view * -.045;
     this.orbit.rotation.x = p.dragY;
     this.orbit.position.y = (1 - smooth(p.intro)) * -.12;
-    this.neckPivot.rotation.z = (1 - smooth(p.intro)) * 1.10;
+    this.neckPivot.rotation.z = (1 - smooth(p.intro)) * .62;
     this.tailPivot.rotation.z = (1 - smooth(p.intro)) * -1.20;
     for (const c of this.covers) c.node.rotation.x = c.open * smooth(p.wing);
     for (const [id, root] of this.cityRoots) {
@@ -240,7 +280,7 @@ export class FoldScene {
       // Same sheet stays attached; no shrink-to-zero hiding of geometry.
       this.story.position.y += .015;
     }
-    this.frameCamera(); this.model.updateMatrixWorld(true);
+    this.model.updateMatrixWorld(true); this.frameCamera();
   }
   private frameCamera() {
     const aspect = this.width / this.height; const mobile = this.width < 760;
