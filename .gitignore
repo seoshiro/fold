@@ -6,3 +6,6 @@ test-results/
 *.blend1
 
 *.tsbuildinfo
+
+__pycache__/
+*.pyc

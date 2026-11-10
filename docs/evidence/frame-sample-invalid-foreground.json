@@ -1,0 +1,1560 @@
+{
+  "kind": "requestAnimationFrame callback interval sample (not GPU timings)",
+  "startedAt": "2026-11-10T13:00:21.749Z",
+  "finishReason": "wall-clock limit",
+  "durationMs": 20006.300000190735,
+  "firstFrameDelayMs": 23.400000143054058,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+  "platform": "Win32",
+  "viewport": {
+    "width": 1366,
+    "height": 768,
+    "dpr": 1.0000000149011612
+  },
+  "finalViewport": {
+    "width": 1366,
+    "height": 768,
+    "dpr": 1.0000000149011612
+  },
+  "reducedMotion": false,
+  "renderer": {
+    "renderer": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (AMD)",
+    "classification": "Not established by renderer string alone; do not infer a physical device"
+  },
+  "conditions": {
+    "recording": "Must be confirmed by operator; this sampler does not start recording",
+    "otherHeavyTests": "Must be confirmed by operator",
+    "wasHidden": false,
+    "resized": false,
+    "staticInspections": 1,
+    "physicalDevice": "Not established; viewport simulation is not a phone test"
+  },
+  "assessment": {
+    "warnings": [
+      "Too few RAF intervals for a representative foreground 20s sample",
+      "At least one RAF gap exceeded one second"
+    ],
+    "foregroundPerformanceClaim": "Not supported by this sample"
+  },
+  "frames": 27,
+  "frameIntervalMs": {
+    "p50": 1002,
+    "p95": 1007.1999999999971,
+    "p99": 1007.9000000000015,
+    "max": 1007.9000000000015,
+    "over33_4": 19,
+    "over50": 19
+  },
+  "longTasksSupported": true,
+  "longTasks": [],
+  "states": [
+    {
+      "timeMs": 0,
+      "state": "unfolding",
+      "city": "kyoto",
+      "place": null
+    }
+  ],
+  "sceneDiagnostics": [
+    {
+      "timeMs": 0,
+      "stats": {
+        "frames": 37,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0.000205
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 1092,
+      "stats": {
+        "frames": 46,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0.000032
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 2094,
+      "stats": {
+        "frames": 47,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0.000015
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 3097,
+      "stats": {
+        "frames": 48,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0.000005
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 4099,
+      "stats": {
+        "frames": 49,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0.000001
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 5103,
+      "stats": {
+        "frames": 50,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 6106,
+      "stats": {
+        "frames": 51,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 7111,
+      "stats": {
+        "frames": 52,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 8117,
+      "stats": {
+        "frames": 53,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 9121,
+      "stats": {
+        "frames": 54,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 10121,
+      "stats": {
+        "frames": 55,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 11123,
+      "stats": {
+        "frames": 56,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 12128,
+      "stats": {
+        "frames": 57,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 13130,
+      "stats": {
+        "frames": 58,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 14134,
+      "stats": {
+        "frames": 59,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 15136,
+      "stats": {
+        "frames": 60,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 16137,
+      "stats": {
+        "frames": 61,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 17139,
+      "stats": {
+        "frames": 62,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 18147,
+      "stats": {
+        "frames": 63,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 19154,
+      "stats": {
+        "frames": 64,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    },
+    {
+      "timeMs": 20006,
+      "stats": {
+        "frames": 64,
+        "draws": 140,
+        "triangles": 13008,
+        "meshes": 351,
+        "geometries": 141,
+        "loadMs": 135,
+        "assetBytes": 1320752,
+        "state": "unfolding",
+        "asset": {
+          "expectedRevision": "076641059a3e",
+          "primitiveMeshes": 351,
+          "covers": [
+            {
+              "name": "COVER_almaty",
+              "foldOpen": -2.95,
+              "pivot": [
+                0,
+                0.19599996507167816,
+                0
+              ],
+              "currentRotationX": -2.95
+            },
+            {
+              "name": "COVER_kyoto",
+              "foldOpen": -3.02,
+              "pivot": [
+                0,
+                0.18000003695487976,
+                0
+              ],
+              "currentRotationX": -3.02
+            },
+            {
+              "name": "COVER_lisbon",
+              "foldOpen": -2.985,
+              "pivot": [
+                0,
+                0.18799996376037598,
+                0
+              ],
+              "currentRotationX": -2.985
+            }
+          ]
+        },
+        "pose": {
+          "wing": 1,
+          "kyoto": 1,
+          "lisbon": 0,
+          "almaty": 0,
+          "story": 0,
+          "view": 1,
+          "intro": 1,
+          "dragX": 0,
+          "dragY": 0,
+          "zoom": 1,
+          "focus": 0
+        },
+        "renderer": {
+          "calls": 140,
+          "triangles": 13008
+        },
+        "size": [
+          1351.2000732421875,
+          603
+        ]
+      }
+    }
+  ],
+  "intervalsMs": [
+    7.69999999999709,
+    8.099999999998545,
+    7.5,
+    8.30000000000291,
+    7.599999999998545,
+    7.099999999998545,
+    8,
+    7.80000000000291,
+    1006.6999999999971,
+    1001.8000000000029,
+    1002.6999999999971,
+    1002,
+    1003.8000000000029,
+    1003.6999999999971,
+    1004.3000000000029,
+    1006.2999999999956,
+    1004.5,
+    1000.1000000000058,
+    1001.2999999999956,
+    1005.4000000000015,
+    1002.3000000000029,
+    1003.0999999999985,
+    1002.9000000000015,
+    1000.5999999999985,
+    1001.6999999999971,
+    1007.9000000000015,
+    1007.1999999999971
+  ]
+}

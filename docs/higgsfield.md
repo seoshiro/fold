@@ -22,7 +22,9 @@ The purpose was a subtle washi surface for the actual Blender crane. The image c
 
 ## Acceptance
 
-**Texture inspection is complete; actual site acceptance remains pending desktop WebGL QA.** Closed, intermediate, unfolded and close-up views must be checked in the site's lighting for seams, sparkle, plastic-looking relief and loading cost. No second generation has been submitted or scheduled. A future retry requires a concrete flaw, a current quote, and sufficient remaining project allowance.
+**The material is used in the published preview.** Pixel inspection, actual WebGL city endpoints and a close-up have been inspected. Five Blender hinge poses and an underside view are retained separately. Fine fibers remain subtle at normal whole-object viewing distance. No new generation is warranted by this static review.
+
+This is not a claim of complete motion or performance acceptance: a continuous browser recording could not be obtained, and the available frame sample was invalidated by browser throttling. See `QA.md` for the evidence and gaps. No second generation has been submitted or scheduled. A future retry requires a concrete flaw, a current quote, and sufficient remaining project allowance.
 
 The paper was generated for this project through the user's connected Higgsfield account, subject to applicable Higgsfield/provider terms. No third-party paper photograph or city mesh was copied; no CC0 claim is made.
 

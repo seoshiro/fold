@@ -11,7 +11,7 @@
     {
       "id": "fold-paper-001",
       "purpose": "Warm ivory fine washi fibers for the actual folding crane surface; replace visibly directional procedural fibers only if in-site evaluation improves material.",
-      "status": "completed_pending_site_evaluation",
+      "status": "completed_used_in_public_preview",
       "model_id": "gpt_image_2_6",
       "model_name": "GPT Image 2.6",
       "provider": "OpenAI",
@@ -38,10 +38,16 @@
       "quote_file": "assets/higgsfield/fold-paper-001/quote.json",
       "schema_file": "assets/higgsfield/fold-paper-001/model-schema.json",
       "original_file": "assets/higgsfield/fold-paper-001/original.png",
-      "decision": "Candidate passes texture inspection only. Actual site acceptance pending desktop WebGL QA; no further generation submitted or scheduled.",
+      "decision": "Used by the live crane material. Texture pixel inspection and static actual-WebGL city/close-up inspection completed. Fine fibers are subtle at normal viewing distance. No retry is justified by the available evidence. Continuous motion and representative foreground performance remain unverified.",
       "site_evaluation": {
-        "status": "pending",
-        "scope": "Desktop WebGL QA in actual site lighting, including closed, intermediate, open, and close-up views."
+        "status": "static_inspection_completed_motion_unverified",
+        "scope": "Actual WebGL home, three city endpoints and Almaty close-up on Windows Chrome; endpoint inspection is not motion acceptance. Blender five hinge positions and underside detail retained separately.",
+        "limitations": [
+          "No continuous normal-speed browser recording obtained.",
+          "Foreground frame timing invalid because the browser was throttled.",
+          "Fine fibers are difficult to judge in whole-object screenshots; no reference-level material claim."
+        ],
+        "evidence": "docs/QA.md"
       },
       "submitted_at": "2026-11-10T11:58:51.780929+00:00",
       "charge_evidence": "Verified 2.75-credit account-balance delta matches the exact preflight quote. No account balances or provider invoice are published.",

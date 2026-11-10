@@ -20,4 +20,4 @@ Visual source: supplied original FOLD concept pack, especially 00_APPROVED_FOLD.
 5. Public deployment verification, source assets, README/evidence.
 
 ## Generation accounting
-FOLD has a separately authorized cap of 150 Higgsfield credits. One paper texture operation cost 2.75 credits; 147.25 remain. Pixel inspection passed, real-site lighting acceptance is pending. No retries or purchases. The supplied reference pack cost 0 Higgsfield credits per its START_HERE. See generation-ledger.json for the current record.
+FOLD has a separately authorized cap of 150 Higgsfield credits. One paper texture operation cost 2.75 credits; 147.25 remain. Pixel inspection and static actual-WebGL material inspection completed. Continuous motion and representative foreground performance remain unverified; see QA.md. No retries or purchases. The supplied reference pack cost 0 Higgsfield credits per its START_HERE. See generation-ledger.json for the current record.

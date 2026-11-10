@@ -69,7 +69,7 @@
   ],
   "acceptance": {
     "pixel_inspection": "passed with documented local tone and seam preparation",
-    "actual_site": "pending desktop WebGL QA",
+    "actual_site": "Used in published preview; static desktop WebGL endpoint and close-up inspection completed. Continuous movement and representative foreground performance remain unverified; see docs/QA.md.",
     "retry": "none; no second operation submitted or scheduled"
   },
   "publish_files": [

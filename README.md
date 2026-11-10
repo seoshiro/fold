@@ -4,9 +4,9 @@
 
 [Open FOLD](https://seoshiro.github.io/fold/) · [Portfolio](https://seoshiro.github.io/) · [Model source](model/fold-master.blend)
 
-![The Kyoto paper world, rendered from the editable FOLD model](public/posters/kyoto.webp)
+![Kyoto open in the live FOLD preview](docs/media/desktop-kyoto.jpg)
 
-*Actual Blender model render, not a screenshot or generated replacement for the interactive scene.*
+*Actual desktop WebGL screenshot, application revision `2397591`. This endpoint was completed with the explicit static-inspection control; it is not proof of motion quality.*
 
 ## One object, three places
 
@@ -46,7 +46,7 @@ FOLD is a self-directed, AI-assisted portfolio concept. Its supplied visual refe
 
 One **Higgsfield GPT Image 2.6** operation produced fine paper fibers used by the real material. The original, prompt, parameters, quote and local processing record are preserved. It cost **2.75 credits** from FOLD's separate 150-credit limit. No generated video or paid 3D model was needed. The remaining budget is not a spending target.
 
-[Material provenance](assets/higgsfield/fold-paper-001/provenance.json) · [Generation ledger](docs/generation-ledger.json)
+[Report in Russian](docs/DELIVERY_RU.md) · [Material provenance](assets/higgsfield/fold-paper-001/provenance.json) · [Generation ledger](docs/generation-ledger.json)
 
 ## Run locally
 
@@ -71,6 +71,6 @@ GitHub Pages serves `docs/` on `main`; that directory contains the checked produ
 
 Seven source tests cover content completeness, locale key parity, URL validation and resilient storage. Actual browser checks are recorded separately with their preview revision, conditions and remaining gaps. A successful build or screenshot is not presented as proof of smooth motion. Mobile viewport tests are emulation, not a claim of physical phone or Safari testing. Translations have not been reviewed by a native-speaker panel.
 
-The public preview and its evidence are undergoing final visual verification. See [QA status](docs/QA.md) for the current result rather than assuming every unrecorded case passed.
+The public preview is available, with source models and static browser evidence. Functional flows and keyboard corrections have been checked as described in the QA log. **Final motion acceptance remains open:** no continuous browser recording was obtained, and a 20-second sample was invalidated by browser throttling. Physical-phone performance, Safari, native 200% zoom and real context-loss recovery remain unverified. See [QA status](docs/QA.md) for exact versions and evidence. No screenshot or successful build substitutes for these checks.
 
 No new blanket license is assigned here. Noto fonts retain their included SIL Open Font License. Generated material remains subject to the applicable service/provider terms.
