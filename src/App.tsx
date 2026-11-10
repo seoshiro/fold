@@ -1,16 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cities, ui, type CityId, type Lang } from "./content";
 import {
-  initialNavigation,
-  navigationUrl,
   readLanguage,
   readSaved,
   safeSet,
   type Navigation,
 } from "./navigation";
-import type { FoldScene } from "./scene";
+import type { FoldScene, SceneFrame, SceneAnchor } from "./scene";
+import { useAtlasNavigation } from "./useAtlasNavigation";
+import { contextAtCityCommit, placeLabel, storyAppearance, PosterTransition, preloadPoster, type Rect } from "./presentation";
+import { MODEL_REVISION } from "./model-revision";
 
-type Anchor = { id: string; x: number; y: number; visible: boolean };
+type Anchor = SceneAnchor;
 type Sheet = "saved" | "about" | null;
 const base = import.meta.env.BASE_URL;
 const Arrow = ({ back = false }: { back?: boolean }) => (
@@ -39,12 +40,16 @@ function sessionSeen() {
   }
 }
 function App() {
-  const [nav, setNav] = useState<Navigation>(initialNavigation),
-    [lang, setLang] = useState<Lang>(readLanguage),
+  const { nav, navigate, back: navigationBack, setTab, setWalkStep, pendingRestore, completeRestore } = useAtlasNavigation();
+  const [viewContext, setViewContext] = useState({ tab: nav.tab, walkStep: nav.walkStep });
+  const { tab, walkStep } = viewContext;
+  const [presented, setPresented] = useState<Navigation>({ city: null, place: null });
+  const [posterSrc, setPosterSrc] = useState<string | null>(null);
+  const [settledContext, setSettledContext] = useState("");
+  const contextKey = [nav.city, nav.place, nav.tab, nav.walkStep].join(":");
+  const [lang, setLang] = useState<Lang>(readLanguage),
     [saved, setSaved] = useState<string[]>(readSaved);
-  const [tab, setTab] = useState<"places" | "walk" | "notes">("places"),
-    [walkStep, setWalkStep] = useState(0),
-    [sheet, setSheet] = useState<Sheet>(null);
+  const [sheet, setSheet] = useState<Sheet>(null);
   const [ready, setReady] = useState(false),
     [fallback, setFallback] = useState(() =>
       new URLSearchParams(location.search).has("fallback"),
@@ -52,41 +57,84 @@ function App() {
     [retry, setRetry] = useState(0),
     [status, setStatus] = useState("loading");
   const [intro, setIntro] = useState(
-      () => !sessionSeen() && !initialNavigation().city,
+      () => !sessionSeen() && !nav.city,
     ),
     [storageError, setStorageError] = useState(false),
     [copyNotice, setCopyNotice] = useState(false);
   const [reduced, setReduced] = useState(
     () => matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
-  const canvas = useRef<HTMLCanvasElement>(null),
+  const app = useRef<HTMLDivElement>(null),
+    stage = useRef<HTMLDivElement>(null),
+    canvas = useRef<HTMLCanvasElement>(null),
     scene = useRef<FoldScene | null>(null),
     anchors = useRef(new Map<string, HTMLButtonElement>()),
     anchorPositions = useRef(new Map<string, Anchor>()),
-    placeTrigger = useRef<HTMLElement | null>(null),
     lastTrigger = useRef<HTMLElement | null>(null),
     article = useRef<HTMLElement>(null),
     sheetRef = useRef<HTMLElement>(null);
-  const readyRef = useRef(false),
+  const posterTransition = useRef(new PosterTransition<typeof nav>()),
+    freshStory = useRef<string | null>(null),
+    latestFrame = useRef<SceneFrame>({ story: 0, origin: { x: 0, y: 0 }, panel: 0 }),
+    geometryRects = useRef<Rect[]>([]),
+    presentationRef = useRef(presented),
     intent = useRef(nav);
   intent.current = nav;
+  presentationRef.current = presented;
   const t = ui[lang],
-    city = cities.find((c) => c.id === nav.city),
-    place = city?.places.find((p) => p.id === nav.place);
+    city = cities.find((c) => c.id === presented.city),
+    place = city?.places.find((p) => p.id === presented.place);
   const activePoint = place
     ? city!.places.indexOf(place)
     : tab === "walk"
       ? walkStep
       : null;
-  const updateAnchors = useCallback((items: Anchor[]) => {
-    for (const a of items) {
+  const updateFrame = useCallback((frame: SceneFrame) => {
+    latestFrame.current = frame;
+    app.current?.style.setProperty("--panel-opacity", String(frame.panel));
+    app.current?.querySelectorAll<HTMLElement>(".city-panel,.home-copy").forEach(el => { el.inert = frame.panel < .96; });
+    const el = article.current, area = stage.current;
+    if (!el || !area) return;
+    const parent = (el.offsetParent as HTMLElement).getBoundingClientRect();
+    const sceneRect = area.getBoundingClientRect();
+    const visual = storyAppearance(frame.story,
+      { x: sceneRect.left + frame.origin.x, y: sceneRect.top + frame.origin.y },
+      { left: parent.left + el.offsetLeft, top: parent.top + el.offsetTop });
+    el.style.transform = visual.transform;
+    el.style.opacity = String(visual.opacity);
+    el.style.setProperty("--story-ink", String(visual.ink));
+    el.dataset.readable = String(visual.readable);
+    el.dataset.progress = frame.story.toFixed(3);
+    el.inert = !visual.readable;
+  }, []);
+  const updateAnchors = useCallback((items: Anchor[], geometry: Rect[] = []) => {
+    geometryRects.current = geometry;
+    const area = stage.current;
+    if (!area) return;
+    const stageRect = area.getBoundingClientRect();
+    const occupied: Rect[] = [];
+    app.current?.querySelectorAll<HTMLElement>(".city-panel,.story-paper,.home-copy,.scene-tools").forEach(el => {
+      const r = el.getBoundingClientRect();
+      occupied.push({ left: r.left - stageRect.left, top: r.top - stageRect.top, right: r.right - stageRect.left, bottom: r.bottom - stageRect.top });
+    });
+    const frame = { left: 12, top: 12, right: stageRect.width - 12, bottom: stageRect.height - 12 };
+    const prioritized = [...items].sort((a, b) => Number(b.id === `poi-${intent.current.walkStep}` && intent.current.tab === "walk") - Number(a.id === `poi-${intent.current.walkStep}` && intent.current.tab === "walk"));
+    for (const a of prioritized) {
       anchorPositions.current.set(a.id, a);
       const el = anchors.current.get(a.id);
-      if (el) {
-        el.style.transform = `translate3d(${a.x}px,${a.y}px,0) translate(-50%,-50%)`;
-        el.style.visibility = a.visible ? "visible" : "hidden";
-        el.dataset.visible = String(a.visible);
+      if (!el) continue;
+      el.dataset.compact = "false";
+      let placement = a.visible ? placeLabel(a, { width: el.offsetWidth, height: el.offsetHeight }, frame, occupied, geometry, a.id.startsWith("city-")) : null;
+      if (!placement && a.visible && a.id.startsWith("poi-")) {
+        el.dataset.compact = "true";
+        placement = placeLabel(a, { width: el.offsetWidth, height: el.offsetHeight }, frame, occupied, geometry);
       }
+      if (placement) {
+        occupied.push(placement.rect);
+        el.style.transform = `translate3d(${placement.x}px,${placement.y}px,0) translate(-50%,-50%)`;
+      }
+      el.style.visibility = placement ? "visible" : "hidden";
+      el.dataset.visible = String(!!placement);
     }
   }, []);
   const seen = () => {
@@ -99,69 +147,29 @@ function App() {
     setIntro(false);
     seen();
   }, []);
-  const go = useCallback((n: Navigation, replace = false) => {
-    if (n.place && !intent.current.place)
-      placeTrigger.current = document.activeElement as HTMLElement;
-    const closingPlace = !n.place && !!intent.current.place;
-    const closingCity = !n.city && !!intent.current.city;
-    const returnCity = intent.current.city;
-    const returnKey = `${intent.current.city}/${intent.current.place}`;
+  const go = useCallback((n: Navigation) => {
+    const previous = intent.current;
     lastTrigger.current = document.activeElement as HTMLElement;
-    const u = navigationUrl(n);
-    if (replace) history.replaceState(n, "", u);
-    else if (u !== location.pathname + location.search + location.hash)
-      history.pushState(n, "", u);
-    setNav(n);
     setSheet(null);
-    if (n.city !== intent.current.city) {
-      setTab("places");
-      setWalkStep(0);
+    navigate(n);
+    if (n.city !== previous.city || n.place !== previous.place) {
+      freshStory.current = n.place ? `${n.city}/${n.place}` : null;
+      // The navigation store captured the outgoing viewport before this move.
+      // Show the physical unfold, instead of animating above a scrolled list.
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
-    window.scrollTo({ top: 0, behavior: "instant" });
-    if (closingCity)
-      requestAnimationFrame(() =>
-        document
-          .querySelector<HTMLElement>(
-            `.city-choices [data-city-key="${returnCity}"]`,
-          )
-          ?.focus({ preventScroll: true }),
-      );
-    if (closingPlace)
-      requestAnimationFrame(() => {
-        if (placeTrigger.current?.isConnected)
-          placeTrigger.current.focus({ preventScroll: true });
-        else
-          document
-            .querySelector<HTMLElement>(
-              `[data-place-key="${returnKey}"]:not(.poi-anchor)`,
-            )
-            ?.focus({ preventScroll: true });
-      });
-  }, []);
+  }, [navigate]);
   const back = useCallback(() => {
     if (sheet) {
       setSheet(null);
       lastTrigger.current?.focus();
-    } else if (intent.current.place) {
-      go({ city: intent.current.city, place: null });
-      setTimeout(
-        () => lastTrigger.current?.isConnected && lastTrigger.current.focus(),
-        50,
-      );
-    } else if (intent.current.city) go({ city: null, place: null });
+    } else if (intent.current.city) navigationBack();
     else if (intro) skipIntro();
-  }, [go, intro, sheet, skipIntro]);
+  }, [navigationBack, intro, sheet, skipIntro]);
   useEffect(() => {
-    const h = () => {
-      setNav(initialNavigation());
-      setSheet(null);
-      setTab("places");
-      setWalkStep(0);
-      window.scrollTo({ top: 0, behavior: "instant" });
-    };
-    window.addEventListener("popstate", h);
-    return () => window.removeEventListener("popstate", h);
-  }, []);
+    setSheet(null);
+    if (freshStory.current !== `${nav.city}/${nav.place}`) freshStory.current = null;
+  }, [nav.city, nav.place]);
   useEffect(() => {
     const m = matchMedia("(prefers-reduced-motion: reduce)");
     const h = () => setReduced(m.matches);
@@ -185,11 +193,8 @@ function App() {
   useEffect(() => {
     let disposed = false;
     setReady(false);
-    readyRef.current = false;
     if (fallback) {
-      setReady(true);
       setIntro(false);
-      setStatus("fallback");
       return;
     }
     setStatus("loading");
@@ -199,7 +204,6 @@ function App() {
         scene.current = new FoldScene(canvas.current, {
           onReady: () => {
             if (disposed) return;
-            readyRef.current = true;
             setReady(true);
           },
           onError: () => {
@@ -210,9 +214,22 @@ function App() {
             }
           },
           onAnchors: updateAnchors,
+          onFrame: updateFrame,
+          onSettled: target => {
+            if (disposed) return;
+            setSettledContext(target.context || "");
+            setViewContext({ tab: intent.current.tab, walkStep: intent.current.walkStep });
+          },
+          onPresentation: ({ city: cityId, place: index }) => {
+            if (disposed) return;
+            const c = cities.find(c => c.id === cityId);
+            setPresented({ city: cityId, place: index == null ? null : c?.places[index]?.id ?? null });
+            setViewContext(current => contextAtCityCommit(presentationRef.current.city, cityId, current, intent.current));
+          },
           onState: (s: string) => {
             if (!disposed) {
               setStatus(s);
+              if (s === "city" || s === "place" || s === "crane") setViewContext({ tab: intent.current.tab, walkStep: intent.current.walkStep });
               if (s === "crane") {
                 setIntro(false);
                 seen();
@@ -233,26 +250,27 @@ function App() {
       scene.current?.dispose();
       scene.current = null;
     };
-  }, [fallback, retry, updateAnchors]);
+  }, [fallback, retry, updateAnchors, updateFrame]);
   useEffect(() => {
     if (ready && !fallback)
       scene.current?.setTarget({
         city: nav.city,
-        place: place ? city!.places.indexOf(place) : null,
-        focus: tab === "walk" ? walkStep : null,
+        place: nav.place ? cities.find(c => c.id === nav.city)!.places.findIndex(p => p.id === nav.place) : null,
+        focus: nav.tab === "walk" ? nav.walkStep : null,
         intro: intro && !reduced,
         reducedMotion: reduced,
+        context: contextKey,
       });
   }, [
     nav.city,
     nav.place,
-    activePoint,
-    tab,
-    walkStep,
+    nav.tab,
+    nav.walkStep,
     intro,
     reduced,
     ready,
     fallback,
+    contextKey,
   ]);
   useEffect(() => {
     if (!ready || fallback || !canvas.current) return;
@@ -261,11 +279,45 @@ function App() {
     return () => observer.disconnect();
   }, [ready, fallback]);
   useEffect(() => {
-    if (place)
-      requestAnimationFrame(() =>
-        article.current?.focus({ preventScroll: true }),
-      );
-  }, [nav.place]);
+    let cancelled = false;
+    const refresh = () => { if (!cancelled) scene.current?.resize(); };
+    document.fonts.ready.then(refresh);
+    document.fonts.addEventListener("loadingdone", refresh);
+    return () => { cancelled = true; document.fonts.removeEventListener("loadingdone", refresh); };
+  }, []);
+  useEffect(() => {
+    if (!fallback) { posterTransition.current.cancel(); return; }
+    setStatus("loading-poster");
+    void posterTransition.current.request(nav,
+      `${base}posters/${nav.city || "crane"}.webp?v=${MODEL_REVISION}`, preloadPoster,
+      (next, src) => {
+        setPosterSrc(src); setPresented({ city: next.city, place: next.place });
+        setViewContext({ tab: next.tab, walkStep: next.walkStep });
+        setSettledContext([next.city, next.place, next.tab, next.walkStep].join(":"));
+        setReady(true); setStatus("fallback");
+      }, base + "paper-crane.svg");
+    return () => posterTransition.current.cancel();
+  }, [fallback, nav]);
+  useLayoutEffect(() => {
+    if (fallback) updateFrame({ story: presented.place ? 1 : 0, origin: { x: 0, y: 0 }, panel: 1 });
+    else updateFrame(latestFrame.current);
+    updateAnchors([...anchorPositions.current.values()], geometryRects.current);
+    scene.current?.resize();
+  }, [presented, lang, tab, walkStep, fallback, updateFrame, updateAnchors]);
+  useEffect(() => {
+    if (!pendingRestore || !ready) return;
+    const settled = fallback ? status === "fallback" : status === (nav.place ? "place" : nav.city ? "city" : "crane");
+    if (!settled || settledContext !== contextKey || presented.city !== nav.city || presented.place !== nav.place) return;
+    const id = requestAnimationFrame(() => {
+      if (!completeRestore(pendingRestore.id)) return;
+      if (freshStory.current === `${nav.city}/${nav.place}` && window.innerWidth <= 800 && article.current) {
+        const rect = article.current.getBoundingClientRect();
+        if (rect.top > window.innerHeight * .45) window.scrollTo({ top: window.scrollY + rect.top - 24, behavior: reduced ? "instant" : "smooth" });
+      }
+      freshStory.current = null;
+    });
+    return () => cancelAnimationFrame(id);
+  }, [pendingRestore, ready, fallback, status, presented, nav, settledContext, contextKey, completeRestore, reduced]);
   useEffect(() => {
     if (sheet) {
       requestAnimationFrame(() => sheetRef.current?.focus());
@@ -327,17 +379,14 @@ function App() {
     go({ city: id, place: null });
   };
   const anchorRef = (id: string) => (el: HTMLButtonElement | null) => {
-    if (el) {
-      anchors.current.set(id, el);
-      const a = anchorPositions.current.get(id);
-      if (a) {
-        el.style.transform = `translate3d(${a.x}px,${a.y}px,0) translate(-50%,-50%)`;
-        el.style.visibility = a.visible ? "visible" : "hidden";
-      }
-    } else anchors.current.delete(id);
+    if (el) anchors.current.set(id, el);
+    else anchors.current.delete(id);
   };
   return (
     <div
+      ref={app}
+      data-presented-city={presented.city || "crane"}
+      data-presented-place={presented.place || ""}
       className={`app ${city ? "city-mode" : "home-mode"} ${place ? "story-mode" : ""} ${fallback ? "fallback-mode" : ""} ${intro && !ready ? "is-loading" : ""}`}
       data-scene={status}
     >
@@ -347,6 +396,7 @@ function App() {
       <header className="header">
         <button
           className="wordmark"
+          data-focus-key="home"
           onClick={() => go({ city: null, place: null })}
           aria-label="FOLD"
         >
@@ -385,24 +435,14 @@ function App() {
             <p>{t.selectFold}</p>
           </div>
         )}
-        <div className="scene-stage" aria-label={t.sceneDescription}>
+        <div className="scene-stage" ref={stage} aria-label={t.sceneDescription}>
           {!fallback && <canvas ref={canvas} aria-hidden="true" />}
-          {fallback && (
-            <img
-              className="fallback-poster"
-              onError={({ currentTarget }) => {
-                if (!currentTarget.src.endsWith("paper-crane.svg"))
-                  currentTarget.src = base + "paper-crane.svg";
-              }}
-              src={`${base}posters/${city?.id || "crane"}.webp?v=20261110-modelonly`}
-              alt={city ? city.name[lang] : t.sceneDescription}
-            />
+          {fallback && posterSrc && (
+            <img className="fallback-poster" src={posterSrc} alt={city ? city.name[lang] : t.sceneDescription} />
           )}
-          {!ready && (
+          {(!ready || (fallback && !posterSrc)) && (
             <div className="loading" role="status">
-              <div className="paper-loader" />
               <p>{t.loadingPaper}</p>
-              <div className="ink-line" />
             </div>
           )}
           {ready && !fallback && !intro && (
@@ -426,6 +466,7 @@ function App() {
                       key={p.id}
                       ref={anchorRef("poi-" + i)}
                       data-place-key={`${city.id}/${p.id}`}
+                      data-focus-key={`pin:${city.id}:${p.id}`}
                       onClick={() => go({ city: city.id, place: p.id })}
                       aria-label={p.name[lang]}
                     >
@@ -484,13 +525,13 @@ function App() {
               <span>{city.number} / 03</span>
               <button
                 className="back-link"
-                onClick={() => go({ city: null, place: null })}
+                onClick={navigationBack}
               >
                 <Arrow back />
                 {t.backToCrane}
               </button>
             </div>
-            <h1 id="city-title">
+            <h1 id="city-title" tabIndex={-1} data-focus-key={`city-title:${city.id}`}>
               {city.name[lang]}
               <span className="title-period">.</span>
             </h1>
@@ -509,6 +550,7 @@ function App() {
                   key={x}
                   role="tab"
                   id={"tab-" + x}
+                  data-focus-key={"tab:" + x}
                   aria-controls="city-tab-panel"
                   aria-selected={tab === x}
                   tabIndex={tab === x ? 0 : -1}
@@ -530,6 +572,7 @@ function App() {
                     <li key={p.id}>
                       <button
                         data-place-key={`${city.id}/${p.id}`}
+                        data-focus-key={`place:${city.id}:${p.id}`}
                         onClick={() => go({ city: city.id, place: p.id })}
                       >
                         <span className="place-index">0{i + 1}</span>
@@ -554,6 +597,7 @@ function App() {
                   <button
                     className="text-link"
                     data-place-key={`${city.id}/${city.places[walkStep].id}`}
+                    data-focus-key={`walk:${city.id}:${walkStep}`}
                     onClick={() =>
                       go({ city: city.id, place: city.places[walkStep].id })
                     }
@@ -612,6 +656,8 @@ function App() {
         {city && place && (
           <article
             className="story-paper"
+            data-focus-key={`story:${city.id}:${place.id}`}
+            data-story-key={`${city.id}/${place.id}`}
             ref={article}
             tabIndex={-1}
             aria-labelledby="story-title"
@@ -622,7 +668,7 @@ function App() {
               </span>
               <button
                 className="icon-button"
-                onClick={() => go({ city: city.id, place: null })}
+                onClick={navigationBack}
                 aria-label={t.close}
               >
                 ×
@@ -655,7 +701,7 @@ function App() {
               </button>
               <button
                 className="text-link"
-                onClick={() => go({ city: city.id, place: null })}
+                onClick={navigationBack}
               >
                 <Arrow back />
                 {t.backToCity}
@@ -679,6 +725,7 @@ function App() {
               <button
                 key={c.id}
                 data-city-key={c.id}
+                data-focus-key={`city:${c.id}`}
                 onClick={() => chooseCity(c.id)}
               >
                 <span className="choice-number">{c.number}</span>

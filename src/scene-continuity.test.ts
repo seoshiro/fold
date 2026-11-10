@@ -29,7 +29,7 @@ function fixture(): Headless {
   Object.assign(instance, {
     orbit, model, anchors, cityRoots, story, storyOriginal: story.position.clone(),
     ready: true, disposed: false, startedIntro: true, state: 'city',
-    options: { onState() {} }, transition: null, viewTween: null,
+    options: { onState() {} }, presentation: { city: 'kyoto', place: null }, activeStory: null, transition: null, viewTween: null,
     width: 1366, height: 650, covers: [], hinges: new Map(),
     neckPivot: new THREE.Group(), tailPivot: new THREE.Group(),
     projected: new THREE.Vector3(), focusPoint: new THREE.Vector3(),
@@ -108,7 +108,7 @@ describe('scene retargeting continuity, deterministic GSAP time', () => {
     const old = storyPosition(s), rotation = s.story.rotation.x;
     change(s, { place: 1 }); same(storyPosition(s), old); expect(s.story.rotation.x).toBe(rotation);
     advance(s, .125); same(storyPosition(s), old); expect(s.pose.story).toBeGreaterThan(0);
-    advance(s, .25); expect(s.pose.story).toBe(0); expect(s.story.visible).toBe(false);
+    advance(s, .42); expect(s.pose.story).toBe(0); expect(s.story.visible).toBe(false);
     expect(storyPosition(s).distanceTo(expectedStory(s, 'kyoto', 1))).toBeLessThan(1e-6);
     settle(s); expect(s.pose.story).toBe(1); expect(s.story.visible).toBe(true);
   });
@@ -121,9 +121,9 @@ describe('scene retargeting continuity, deterministic GSAP time', () => {
     change(s, { place: 1 }); same(storyPosition(s), original);
     advance(s, .12); same(storyPosition(s), original);
     change(s, { place: 2 }); same(storyPosition(s), original);
-    advance(s, .25); expect(s.pose.story).toBe(0);
+    advance(s, .42); expect(s.pose.story).toBe(0);
     expect(storyPosition(s).distanceTo(expectedStory(s, 'kyoto', 2))).toBeLessThan(1e-6);
-    advance(s, .4); const reopening = storyPosition(s), currentAngle = s.story.rotation.x;
+    advance(s, .6); const reopening = storyPosition(s), currentAngle = s.story.rotation.x;
     change(s, { place: 1 }); same(storyPosition(s), reopening); expect(s.story.rotation.x).toBe(currentAngle);
     settle(s); expect(storyPosition(s).distanceTo(expectedStory(s, 'kyoto', 1))).toBeLessThan(1e-6);
   });
@@ -141,10 +141,98 @@ describe('scene retargeting continuity, deterministic GSAP time', () => {
       const s = fixture(); change(s, { place: 0, reducedMotion }); settle(s);
       const original = storyPosition(s);
       change(s, { city: 'almaty', place: 2 }); same(storyPosition(s), original);
-      advance(s, .25 * (reducedMotion ? .12 : 1));
+      advance(s, .42 * (reducedMotion ? .12 : 1));
       expect(s.pose.story).toBe(0); expect(s.story.visible).toBe(false);
       settle(s); expect(storyPosition(s).distanceTo(expectedStory(s, 'almaty', 2))).toBeLessThan(1e-6);
       expect(s.pose.story).toBe(1);
     }
+  });
+});
+
+describe('scene owns semantic presentation milestones', () => {
+  it('retains story identity and origin through the complete reverse fold', () => {
+    const s = fixture(), events: any[] = [];
+    s.options.onPresentation = (p: unknown) => events.push(p);
+    change(s, { place: 0 }); advance(s, .02);
+    expect(events).toEqual([]);
+    settle(s); expect(s.presentation).toEqual({ city: 'kyoto', place: 0 });
+    const origin = storyPosition(s);
+    change(s, { place: null }); advance(s, .40);
+    expect(s.presentation).toEqual({ city: 'kyoto', place: 0 }); same(storyPosition(s), origin);
+    expect(s.pose.story).toBeGreaterThan(0);
+    settle(s); expect(s.pose.story).toBe(0);
+    expect(s.presentation).toEqual({ city: 'kyoto', place: null }); same(storyPosition(s), origin);
+  });
+
+  it('commits the new city only after the old geometry closes and hides new copy until its rise', () => {
+    const s = fixture(); change(s, { place: 0 }); settle(s);
+    change(s, { city: 'lisbon', place: 2 }); advance(s, .30);
+    expect(s.presentation).toEqual({ city: 'kyoto', place: 0 });
+    advance(s, .65); expect(s.pose.kyoto).toBe(0); expect(s.presentation.city).toBe('kyoto');
+    advance(s, .67); expect(s.presentation).toEqual({ city: 'lisbon', place: null });
+    let frame: any; s.options.onFrame = (value: unknown) => { frame = value; };
+    s.updatePresentationFrame(); expect(frame.panel).toBe(0);
+    advance(s, 1.44); expect(s.presentation).toEqual({ city: 'lisbon', place: 2 });
+    settle(s); s.updatePresentationFrame(); expect(frame.panel).toBe(1); expect(frame.story).toBe(1);
+  });
+
+  it('kills pending city/story commits on rapid reversal and settles only the latest full context', () => {
+    const s = fixture(), settled: any[] = [];
+    s.options.onSettled = (value: unknown) => settled.push(value);
+    change(s, { city: 'lisbon', place: 1, context: 'old' }); advance(s, .40);
+    change(s, { city: 'almaty', place: 2, context: 'middle' }); advance(s, .55);
+    change(s, { city: 'kyoto', place: 0, context: 'latest' }); settle(s);
+    expect(s.presentation).toEqual({ city: 'kyoto', place: 0 });
+    expect(settled.map(t => t.context)).toEqual(['latest']);
+    change(s, { context: 'same-pose-new-tab' });
+    expect(settled.at(-1).context).toBe('same-pose-new-tab');
+  });
+
+  it('unfolds the whole real wing during intro and skip settles it immediately', () => {
+    const s = fixture(); s.startedIntro = false; s.wingPivot = new THREE.Group();
+    s.target = { city: null, place: null, reducedMotion: false }; s.pose.wing = 0;
+    change(s, { intro: true }); expect(s.wingPivot.rotation.z).toBeCloseTo(1.12);
+    advance(s, 1.5); expect(s.wingPivot.rotation.z).toBeGreaterThan(.1); expect(s.wingPivot.rotation.z).toBeLessThan(1.1);
+    expect(s.pose.wing).toBe(0); // No empty-city cover pulse.
+    s.skipIntro(); s.applyPose(); expect(s.wingPivot.rotation.z).toBe(0); expect(s.state).toBe('crane');
+  });
+
+  it('keeps automatic mobile framing continuous across city and story visibility thresholds', () => {
+    const s = fixture(); s.width = 390; s.height = 300;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(8, 3, 2)); s.model.add(body);
+    const city = s.cityRoots.get('kyoto'); city.name = 'CITY_kyoto';
+    const extra = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1)); extra.position.x = 20; city.add(extra);
+    s.story.name = 'STORY_TAB';
+    const leaf = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 1)); s.story.add(leaf);
+    const corners = (mesh: THREE.Mesh) => {
+      mesh.geometry.computeBoundingBox(); const b = mesh.geometry.boundingBox!; const points: THREE.Vector3[] = [];
+      for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) points.push(new THREE.Vector3(x, y, z));
+      return points;
+    };
+    s.framingBounds = new Map([body, extra, leaf].map(mesh => [mesh, corners(mesh)]));
+    s.pose.kyoto = .001999; s.applyPose(); const beforeCity = s.camera.top, position = camera(s);
+    s.pose.kyoto = .002001; s.applyPose();
+    expect(Math.abs(s.camera.top - beforeCity)).toBeLessThan(.001); expect(camera(s).distanceTo(position)).toBeLessThan(.001);
+    s.pose.storyX = 30; s.pose.story = .003999; s.applyPose(); const beforeStory = s.camera.top;
+    s.pose.story = .004001; s.applyPose(); expect(Math.abs(s.camera.top - beforeStory)).toBeLessThan(.002);
+  });
+});
+
+describe('retargets before the city presentation cue', () => {
+  it('does not lose a city commit when a story is cancelled while the city is still opening', () => {
+    const s = fixture(); s.presentation = { city: null, place: null };
+    s.target = { city: null, place: null, reducedMotion: false }; s.pose.kyoto = 0; s.pose.wing = 0;
+    change(s, { city: 'kyoto', place: 0 }); advance(s, .20);
+    change(s, { place: null }); expect(s.presentation.city).toBe(null);
+    settle(s); expect(s.presentation).toEqual({ city: 'kyoto', place: null });
+  });
+  it('waits for architecture when a same-city story is requested midway through opening', () => {
+    const s = fixture(); s.presentation = { city: null, place: null };
+    s.target = { city: null, place: null, reducedMotion: false }; s.pose.kyoto = 0; s.pose.wing = 0;
+    change(s, { city: 'kyoto' }); advance(s, .70);
+    expect(s.presentation.city).toBe('kyoto'); expect(s.pose.kyoto).toBeLessThan(.5);
+    change(s, { place: 2 }); advance(s, .50);
+    expect(s.presentation.place).toBe(null); expect(s.pose.story).toBe(0);
+    settle(s); expect(s.presentation).toEqual({ city: 'kyoto', place: 2 });
   });
 });

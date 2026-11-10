@@ -1,8 +1,8 @@
 {
   "generator": "Original deterministic Blender Python geometry. No generated AI model or third-party mesh.",
   "blender": "4.3.2",
-  "mesh_objects": 228,
-  "triangles": 24688,
+  "mesh_objects": 250,
+  "triangles": 25692,
   "texture": {
     "embedded_fallback": {
       "format": "JPEG",
@@ -24,7 +24,7 @@
     },
     "source": "One Higgsfield paper generation, normalized and made seamless locally. See docs/generation-ledger.json and original archived asset. Original deterministic texture remains in public/textures/paper-fibers.png."
   },
-  "glb_bytes": 1320752,
+  "glb_bytes": 1404220,
   "cities": [
     "kyoto",
     "lisbon",
@@ -44,7 +44,7 @@
     "almaty scored edge": 16,
     "Azulejo diamond": 108,
     "Azulejo diamond.009": 108,
-    "Azulejo diamond.018": 108,
+    "Azulejo diamond.018": 120,
     "Base scored seam": 80,
     "Base scored seam.001": 80,
     "Base scored seam.002": 80,
@@ -67,9 +67,12 @@
     "Base scored seam.019": 8,
     "Base scored seam.020": 8,
     "Base scored seam.021": 8,
+    "Bastion folded terrace": 156,
+    "Bastion open arcade": 320,
     "Beak inner ridge": 24,
     "Beak lower face": 24,
     "Beak upper face": 28,
+    "Belem turret folded cap": 68,
     "Body central pleat": 24,
     "Body facing folds": 32,
     "Body lower folds": 12,
@@ -91,7 +94,7 @@
     "Branch print.084": 56,
     "Bridge curved red rail": 400,
     "Bridge deck folded edge": 16,
-    "Broad temple hall": 12,
+    "Broad temple hall": 36,
     "Cathedral central tower": 48,
     "Central crossbar": 48,
     "Central gold dome": 48,
@@ -119,39 +122,62 @@
     "Folded mountain silhouette.001": 36,
     "Folded mountain silhouette.002": 36,
     "Four folded roof pitches": 64,
-    "Four folded roof pitches.004": 16,
-    "Four folded roof pitches.005": 156,
+    "Four folded roof pitches.004": 156,
     "Green avenue print": 32,
     "Green Bazaar long market hall far wall": 52,
     "Green Bazaar long market hall roof fold left": 84,
+    "Hillside folded terrace face": 24,
+    "Hillside folded terrace face.001": 12,
+    "Hillside folded terrace face.002": 24,
+    "Hillside folded terrace face.003": 12,
+    "Hillside folded terrace face.004": 12,
+    "Hillside folded terrace face.005": 12,
+    "Hillside folded terrace face.006": 24,
+    "Hillside folded terrace face.007": 12,
+    "Hillside folded terrace face.008": 12,
+    "Hillside terrace contour": 16,
+    "Hillside terrace contour.002": 16,
+    "Hillside terrace contour.004": 16,
+    "Hillside terrace contour.006": 16,
+    "Hillside terrace contour.008": 16,
+    "Hillside terrace contour.010": 16,
+    "Hillside terrace contour.012": 16,
+    "Hillside terrace contour.014": 16,
+    "Hillside terrace contour.016": 16,
+    "Hillside thin terrace landing": 60,
+    "Hillside thin terrace landing.001": 72,
+    "Hillside thin terrace landing.002": 48,
+    "Hillside thin terrace landing.003": 64,
+    "Hillside thin terrace landing.004": 60,
+    "Hillside thin terrace landing.005": 72,
+    "Hillside thin terrace landing.006": 64,
+    "Hillside thin terrace landing.007": 48,
+    "Hillside thin terrace landing.008": 72,
+    "Kiyomizu long hipped roof": 176,
     "kyoto exterior folio": 12,
     "kyoto scored edge": 16,
+    "Lisbon balcony baluster": 48,
+    "Lisbon balcony baluster.005": 48,
+    "Lisbon balcony baluster.010": 48,
+    "Lisbon blue parapet stripe": 12,
+    "Lisbon blue parapet stripe.002": 12,
+    "Lisbon climbing lane": 112,
     "lisbon exterior folio": 12,
+    "Lisbon hipped terracotta roof": 32,
+    "Lisbon hipped terracotta roof.001": 32,
+    "Lisbon hipped terracotta roof.002": 32,
+    "Lisbon hipped terracotta roof.003": 32,
     "lisbon scored edge": 16,
     "Lisbon townhouse far wall": 36,
-    "Lisbon townhouse far wall.001": 52,
-    "Lisbon townhouse far wall.002": 52,
-    "Lisbon townhouse far wall.003": 36,
-    "Lisbon townhouse far wall.004": 52,
-    "Lisbon townhouse far wall.005": 52,
-    "Lisbon townhouse far wall.006": 36,
-    "Lisbon townhouse far wall.007": 52,
-    "Lisbon townhouse far wall.008": 52,
-    "Lisbon townhouse far wall.009": 36,
     "Lisbon townhouse front card": 16,
-    "Lisbon townhouse front card.003": 16,
-    "Lisbon townhouse front card.006": 16,
-    "Lisbon townhouse front card.009": 16,
+    "Lisbon townhouse front card.003": 12,
+    "Lisbon townhouse front card.008": 12,
     "Lisbon townhouse roof fold left": 24,
     "Lisbon townhouse roof fold left.001": 24,
     "Lisbon townhouse roof fold left.002": 24,
-    "Lisbon townhouse roof fold left.003": 24,
-    "Lisbon townhouse roof fold left.004": 24,
-    "Lisbon townhouse roof fold left.005": 24,
-    "Lisbon townhouse roof fold left.006": 24,
-    "Lisbon townhouse roof fold left.007": 24,
-    "Lisbon townhouse roof fold left.008": 24,
-    "Lisbon townhouse roof fold left.009": 24,
+    "Lisbon townhouse top paper.001": 12,
+    "Lisbon townhouse top paper.004": 12,
+    "Lisbon townhouse top paper.006": 12,
     "Machiya back eave": 24,
     "Machiya back eave.001": 24,
     "Machiya back eave.002": 24,
@@ -188,30 +214,27 @@
     "Printed doorway.004": 84,
     "Printed doorway.005": 60,
     "Printed doorway.006": 60,
-    "Printed doorway.007": 84,
+    "Printed doorway.007": 60,
     "Printed doorway.008": 84,
-    "Printed doorway.009": 120,
-    "Printed doorway.010": 108,
+    "Printed doorway.009": 84,
+    "Printed doorway.010": 120,
     "Printed doorway.011": 84,
-    "Printed doorway.012": 156,
+    "Printed doorway.012": 60,
     "Printed doorway.013": 84,
-    "Printed doorway.014": 60,
-    "Printed doorway.015": 60,
-    "Printed doorway.016": 84,
+    "Printed doorway.014": 84,
+    "Printed doorway.015": 84,
+    "Printed doorway.016": 60,
     "Printed doorway.017": 48,
     "Printed doorway.018": 84,
     "Printed doorway.019": 60,
     "Printed doorway.020": 48,
     "Printed doorway.021": 96,
     "Printed river contour": 3640,
-    "Printed river contour.009": 4320,
+    "Printed river contour.009": 4288,
     "Printed roof rib": 576,
-    "Printed roof rib.072": 144,
-    "Printed roof rib.090": 432,
+    "Printed roof rib.072": 432,
     "Printed window.030": 144,
-    "Printed window.042": 60,
-    "Printed window.114": 48,
-    "Printed window.118": 72,
+    "Printed window.104": 60,
     "Reverse folio topographic print": 1032,
     "Reverse folio topographic print.005": 1032,
     "Reverse folio topographic print.010": 1032,
@@ -220,17 +243,17 @@
     "Tail folded return": 8,
     "Tail long folded sail": 8,
     "Tail ridge": 8,
+    "Temple dark eave": 48,
+    "Temple roof crease": 72,
     "Torii column": 48,
-    "Tower crenellation": 48,
-    "Tower upper ledge": 12,
-    "Tram ink track": 32,
-    "Tram ivory window band": 12,
+    "Tram end lamp": 24,
+    "Tram folded ivory roof": 32,
+    "Tram front return": 44,
     "Tram pantograph": 24,
     "Tram wheel": 24,
-    "Tram yellow body": 12,
     "Triangular paper sail": 8,
-    "Veranda posts": 48,
-    "Veranda timber paper strut": 32,
+    "Turret central fold": 32,
+    "Veranda posts": 64,
     "Window mullion": 32,
     "Window mullion.004": 32,
     "Window mullion.008": 32,
@@ -240,24 +263,23 @@
     "Window mullion.026": 32,
     "Window mullion.030": 96,
     "Window mullion.042": 40,
-    "Window mullion.047": 48,
-    "Window mullion.053": 48,
-    "Window mullion.059": 72,
-    "Window mullion.068": 64,
-    "Window mullion.076": 48,
-    "Window mullion.082": 96,
+    "Window mullion.047": 32,
+    "Window mullion.051": 48,
+    "Window mullion.057": 48,
+    "Window mullion.063": 72,
+    "Window mullion.072": 48,
+    "Window mullion.078": 32,
+    "Window mullion.082": 48,
+    "Window mullion.088": 48,
     "Window mullion.094": 48,
     "Window mullion.100": 32,
-    "Window mullion.104": 32,
-    "Window mullion.108": 48,
-    "Window mullion.114": 32,
-    "Window mullion.118": 48,
-    "Window mullion.124": 24,
-    "Window mullion.127": 48,
-    "Window mullion.133": 32,
-    "Window mullion.137": 24,
-    "Window mullion.140": 72,
-    "Window mullion.149": 96,
+    "Window mullion.104": 40,
+    "Window mullion.109": 24,
+    "Window mullion.112": 48,
+    "Window mullion.118": 32,
+    "Window mullion.122": 24,
+    "Window mullion.125": 72,
+    "Window mullion.134": 96,
     "Wing continuous lower paper": 28,
     "Wing underside structural crease": 32
   },
@@ -298,5 +320,208 @@
       ],
       "units": "artistic Blender units, Z-up; includes all city modules"
     }
-  }
+  },
+  "open_city_bounds": {
+    "kyoto": {
+      "min": [
+        -0.16909444332122803,
+        0.8944246768951416,
+        0.031199991703033447
+      ],
+      "max": [
+        3.3955154418945312,
+        2.590064287185669,
+        2.371112108230591
+      ],
+      "coordinates": "world glTF Y-up, open architecture only"
+    },
+    "lisbon": {
+      "min": [
+        -0.1518908143043518,
+        0.8758146166801453,
+        -0.03999999910593033
+      ],
+      "max": [
+        3.6005914211273193,
+        2.630315065383911,
+        2.2329275608062744
+      ],
+      "coordinates": "world glTF Y-up, open architecture only"
+    },
+    "almaty": {
+      "min": [
+        -0.1764312982559204,
+        0.8791982531547546,
+        0.026500001549720764
+      ],
+      "max": [
+        3.3394112586975098,
+        2.6518313884735107,
+        1.8139647245407104
+      ],
+      "coordinates": "world glTF Y-up, open architecture only"
+    }
+  },
+  "anchors": {
+    "ANCHOR_almaty-poi-0": {
+      "parent": "CITY_almaty",
+      "local_z_up": [
+        2.930000066757202,
+        -0.800000011920929,
+        1.4199999570846558
+      ],
+      "world_gltf_y_up": [
+        1.7432950735092163,
+        2.6098742485046387,
+        1.0299999713897705
+      ]
+    },
+    "ANCHOR_almaty-poi-1": {
+      "parent": "CITY_almaty",
+      "local_z_up": [
+        1.7599999904632568,
+        -0.5099999904632568,
+        0.5799999833106995
+      ],
+      "world_gltf_y_up": [
+        0.7322739362716675,
+        1.5840396881103516,
+        0.7400000095367432
+      ]
+    },
+    "ANCHOR_almaty-poi-2": {
+      "parent": "CITY_almaty",
+      "local_z_up": [
+        3.0,
+        0.07999999821186066,
+        1.4199999570846558
+      ],
+      "world_gltf_y_up": [
+        1.8122860193252563,
+        2.6217169761657715,
+        0.15000000596046448
+      ]
+    },
+    "ANCHOR_city-almaty": {
+      "parent": "COVER_almaty",
+      "local_z_up": [
+        2.7699999809265137,
+        -1.3300000429153442,
+        0.02500000037252903
+      ],
+      "world_gltf_y_up": [
+        1.7582149505615234,
+        1.5772321224212646,
+        -1.0804245471954346
+      ]
+    },
+    "ANCHOR_city-kyoto": {
+      "parent": "COVER_kyoto",
+      "local_z_up": [
+        3.450000047683716,
+        -0.10000000149011612,
+        0.02500000037252903
+      ],
+      "world_gltf_y_up": [
+        2.47196102142334,
+        1.4385812282562256,
+        0.12770600616931915
+      ]
+    },
+    "ANCHOR_city-lisbon": {
+      "parent": "COVER_lisbon",
+      "local_z_up": [
+        3.1500000953674316,
+        -0.699999988079071,
+        0.02500000037252903
+      ],
+      "world_gltf_y_up": [
+        2.158494472503662,
+        1.4914700984954834,
+        -0.46533387899398804
+      ]
+    },
+    "ANCHOR_kyoto-poi-0": {
+      "parent": "CITY_kyoto",
+      "local_z_up": [
+        2.559999942779541,
+        -0.10999999940395355,
+        1.1399999856948853
+      ],
+      "world_gltf_y_up": [
+        1.425999641418457,
+        2.271313190460205,
+        0.3400000035762787
+      ]
+    },
+    "ANCHOR_kyoto-poi-1": {
+      "parent": "CITY_kyoto",
+      "local_z_up": [
+        1.600000023841858,
+        -1.5,
+        0.6499999761581421
+      ],
+      "world_gltf_y_up": [
+        0.5627375841140747,
+        1.625961422920227,
+        1.7300000190734863
+      ]
+    },
+    "ANCHOR_kyoto-poi-2": {
+      "parent": "CITY_kyoto",
+      "local_z_up": [
+        2.799999952316284,
+        -1.25,
+        0.4300000071525574
+      ],
+      "world_gltf_y_up": [
+        1.7826594114303589,
+        1.6121516227722168,
+        1.4800000190734863
+      ]
+    },
+    "ANCHOR_lisbon-poi-0": {
+      "parent": "CITY_lisbon",
+      "local_z_up": [
+        2.4700000286102295,
+        -0.3499999940395355,
+        1.1200000047683716
+      ],
+      "world_gltf_y_up": [
+        1.3406805992126465,
+        2.236374855041504,
+        0.5799999833106995
+      ]
+    },
+    "ANCHOR_lisbon-poi-1": {
+      "parent": "CITY_lisbon",
+      "local_z_up": [
+        2.1500000953674316,
+        -1.4800000190734863,
+        0.7200000286102295
+      ],
+      "world_gltf_y_up": [
+        1.0929665565490723,
+        1.7880027294158936,
+        1.7100000381469727
+      ]
+    },
+    "ANCHOR_lisbon-poi-2": {
+      "parent": "CITY_lisbon",
+      "local_z_up": [
+        4.019999980926514,
+        -0.9100000262260437,
+        1.2100000381469727
+      ],
+      "world_gltf_y_up": [
+        2.8531107902526855,
+        2.587310314178467,
+        1.1399999856948853
+      ]
+    }
+  },
+  "blend_bytes": 4080536,
+  "blend_sha256": "38c7df03d9a131c890eb6cd5f182e546975d57629eba2dc2b4a7337165f139b0",
+  "glb_sha256": "32763c01ef02dae2b13a5b02882baa5ff81496936a2a6ece23831b82d69d8d4d",
+  "gltf_triangles": 25692
 }

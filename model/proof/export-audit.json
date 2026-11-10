@@ -1,0 +1,34 @@
+{
+  "asset": "public/models/fold-master.glb",
+  "sha256": "32763c01ef02dae2b13a5b02882baa5ff81496936a2a6ece23831b82d69d8d4d",
+  "bytes": 1404220,
+  "triangles": 25692,
+  "vertices_with_uv_normal_splits": 30881,
+  "mesh_nodes": 250,
+  "architecture_hinges": 48,
+  "place_anchors": 9,
+  "cities": {
+    "kyoto": {
+      "mesh_nodes": 68,
+      "triangles": 9412
+    },
+    "lisbon": {
+      "mesh_nodes": 100,
+      "triangles": 8916
+    },
+    "almaty": {
+      "mesh_nodes": 55,
+      "triangles": 3632
+    }
+  },
+  "checks": {
+    "valid_glb_envelope": true,
+    "finite_vertex_coordinates": true,
+    "all_architecture_under_common_wing": true,
+    "all_hinges_use_local_x": true,
+    "nine_place_anchors_retained": true,
+    "story_tab_attached_to_wing": true,
+    "counts_match_blender_manifest": true
+  },
+  "limits": "Structural export checks only. No exact paper collision solving, browser timing or physical phone testing."
+}

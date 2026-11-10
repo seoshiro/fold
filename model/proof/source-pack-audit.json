@@ -1,0 +1,69 @@
+{
+  "before_packing": {
+    "source_sha256": "91734771bc8efdb67461ce5a864c0542fdb5ac9795598c5c087e1d11751b10a1",
+    "geometry_sha256": "00f756c2398520cf8cbe7ed0b39ffc76b3f010aeaae6152204dd5a37de058859",
+    "images": [
+      {
+        "name": "Approved Higgsfield washi albedo",
+        "sha256": "3e94789fe5f34646c739a49413de5e0856adb5d887c8e024ff199aae7660ebd8",
+        "packed": false
+      },
+      {
+        "name": "Higgsfield high-pass paper height",
+        "sha256": "5d42f061a55a48f59ebf2dbd47facc07671161e85f20d769138cc1f5644d8a56",
+        "packed": false
+      }
+    ],
+    "camera": {
+      "location": [
+        1.5499999523162842,
+        -14.5,
+        9.199999809265137
+      ],
+      "rotation": [
+        1.097800374031067,
+        9.391390776158914e-09,
+        0.08941609412431717
+      ],
+      "type": "ORTHO",
+      "ortho_scale": 11.600000381469727
+    }
+  },
+  "packed_master": {
+    "source_sha256": "38c7df03d9a131c890eb6cd5f182e546975d57629eba2dc2b4a7337165f139b0",
+    "geometry_sha256": "00f756c2398520cf8cbe7ed0b39ffc76b3f010aeaae6152204dd5a37de058859",
+    "images": [
+      {
+        "name": "Approved Higgsfield washi albedo",
+        "sha256": "3e94789fe5f34646c739a49413de5e0856adb5d887c8e024ff199aae7660ebd8",
+        "packed": true
+      },
+      {
+        "name": "Higgsfield high-pass paper height",
+        "sha256": "5d42f061a55a48f59ebf2dbd47facc07671161e85f20d769138cc1f5644d8a56",
+        "packed": true
+      }
+    ],
+    "camera": {
+      "location": [
+        1.5499999523162842,
+        -14.5,
+        9.199999809265137
+      ],
+      "rotation": [
+        1.097800374031067,
+        9.391390776158914e-09,
+        0.08941609412431717
+      ],
+      "type": "ORTHO",
+      "ortho_scale": 11.600000381469727
+    }
+  },
+  "checks": {
+    "exact_mesh_coordinates_faces_transforms_material_assignments_unchanged": true,
+    "exact_material_image_bytes_unchanged": true,
+    "camera_unchanged": true,
+    "all_file_images_packed": true
+  },
+  "note": "The earlier landmark and poster pass used the byte-identical geometry and material images before portable embedding. Packing changes the .blend container hash, not the rendered scene."
+}

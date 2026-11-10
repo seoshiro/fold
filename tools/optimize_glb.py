@@ -34,4 +34,7 @@ p.write_bytes(struct.pack('<III',0x46546c67,2,12+8+len(js)+8+len(new))+struct.pa
 manifest=ROOT/'model/asset-manifest.json';a=json.loads(manifest.read_text());a['glb_bytes']=p.stat().st_size;a['texture']={'embedded_fallback':{'format':'JPEG','width':512,'height':512,'quality':88},'runtime_albedo':{'file':'higgsfield-washi-albedo.webp','width':1024,'height':1024,'color_space':'sRGB'},'runtime_height':{'file':'higgsfield-washi-height.webp','width':1024,'height':1024,'color_space':'linear'},'source':'One Higgsfield paper generation, normalized and made seamless locally. See docs/generation-ledger.json and original archived asset. Original deterministic texture remains in public/textures/paper-fibers.png.'};manifest.write_text(json.dumps(a,indent=2));print('Optimized GLB bytes:',p.stat().st_size)
 
 revision_assets=[('MODEL_REVISION','public/models/fold-master.glb'),('PAPER_ALBEDO_REVISION','public/textures/higgsfield-washi-albedo.webp'),('PAPER_HEIGHT_REVISION','public/textures/higgsfield-washi-height.webp')]
+a['glb_sha256']=hashlib.sha256(p.read_bytes()).hexdigest()
+a['gltf_triangles']=sum(j['accessors'][primitive['indices']]['count']//3 for mesh in j['meshes'] for primitive in mesh['primitives'])
+manifest.write_text(json.dumps(a,indent=2))
 (ROOT/'src/model-revision.ts').write_text('// Content-addressed cache keys, generated from the actual asset bytes.\n'+''.join("export const "+name+" = '"+hashlib.sha256((ROOT/path).read_bytes()).hexdigest()[:12]+"';\n" for name,path in revision_assets))

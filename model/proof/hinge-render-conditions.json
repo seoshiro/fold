@@ -1,0 +1,50 @@
+{
+  "source": "model/fold-master.blend",
+  "source_sha256": "91734771bc8efdb67461ce5a864c0542fdb5ac9795598c5c087e1d11751b10a1",
+  "city": "kyoto",
+  "engine": "Cycles CPU",
+  "blender": "4.3.2",
+  "samples": 32,
+  "denoising": false,
+  "resolution": [
+    1200,
+    880
+  ],
+  "threads": 4,
+  "thread_mode": "FIXED",
+  "camera": [
+    1.5499999523162842,
+    -14.5,
+    9.199999809265137
+  ],
+  "rotation_euler": [
+    1.097800374031067,
+    9.391390776158914e-09,
+    0.08941609412431717
+  ],
+  "orthographic_scale": 11.600000381469727,
+  "views": [
+    {
+      "file": "hinge-000.png",
+      "progress": 0
+    },
+    {
+      "file": "hinge-025.png",
+      "progress": 0.25
+    },
+    {
+      "file": "hinge-050.png",
+      "progress": 0.5
+    },
+    {
+      "file": "hinge-075.png",
+      "progress": 0.75
+    },
+    {
+      "file": "hinge-100.png",
+      "progress": 1
+    }
+  ],
+  "equivalent_packed_master_sha256": "38c7df03d9a131c890eb6cd5f182e546975d57629eba2dc2b4a7337165f139b0",
+  "packing_audit": "source-pack-audit.json"
+}

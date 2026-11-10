@@ -20,7 +20,7 @@ From the repository root:
     python tools/optimize_glb.py
     python tools/package_posters.py
 
-`tools/render_model.py` can re-render a saved source without rerunning geometry generation. Add `-- --proof` for the five intermediate views. The installed Blender build lacks OpenImageDenoise, so renders intentionally use CPU Cycles without denoising. Runtime shadows are real-time and are not Blender's baked ground.
+`tools/render_model.py` can re-render a saved source without rerunning geometry generation. Add `-- --proof` for the five intermediate views, `-- --details` for the paper and underside checks, or `-- --city-details` for close Kyoto and Lisbon landmark views. `python tools/verify_model.py` validates the exported rig, finite coordinates, nine place anchors and matching mesh counts. The installed Blender build lacks OpenImageDenoise, so renders intentionally use CPU Cycles without denoising. Runtime shadows are real-time and are not Blender's baked ground.
 
 ## Material provenance
 
@@ -32,4 +32,12 @@ Architecture uses thin die-cut cards with shallow return folds and pitched paper
 
 The source is made to be inspected and edited. City geometry, material slots and hinge nodes remain distinct. Meshes sharing a rigid parent and material are joined to reduce draw calls; this does not merge independent animated pivots. See `asset-manifest.json` for evaluated counts and exact export size.
 
-Final master: 24,688 evaluated triangles across 228 rigid mesh objects, before visibility culling. Optimized GLB: 1,320,752 bytes. The optional high-pass image is not a tangent-space normal map; the optimizer strips Blender’s incorrect normal link and the runtime uses it as a small bump perturbation.
+Final master: 25,692 evaluated triangles across 250 rigid mesh objects, before visibility culling. Optimized GLB: 1,404,220 bytes. The optional high-pass image is not a tangent-space normal map; the optimizer strips Blender’s incorrect normal link and the runtime uses it as a small bump perturbation.
+
+## Landmark readability refinement
+
+The original crane, wing envelope, 48 architecture pivots and all nine sourced place anchors are retained. Kyoto's Kiyomizu-inspired hall now has a wider long-ridged roof, raised veranda, open timber trestles and clearer dark window rhythm. The small tiered pagoda remains an unnamed decorative motif.
+
+Lisbon's ten house cards now form separated front and back hillside rows, with thin continuous terrace risers, gabled/hipped/parapet roof types and three projecting paper balconies. The larger yellow tram has a folded roof, shallow front return and separate pantograph. Belém has a broad riverside bastion, arched loggia, projecting turrets and crenellated tower silhouette. These are artistic interpretations, not metric replicas. No landscape cubes or additional textures were added.
+
+The overall open and closed crane bounds did not expand. Exact city-only bounds and anchor coordinates are included in `asset-manifest.json`; `proof/export-audit.json` records structural checks and exact GLB hash. No new image generation or paid asset was used.

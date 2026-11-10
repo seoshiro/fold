@@ -2,16 +2,22 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { gsap } from 'gsap';
 import { MODEL_REVISION, PAPER_ALBEDO_REVISION, PAPER_HEIGHT_REVISION } from './model-revision';
+import type { Rect } from './presentation';
 
 export type CityId = 'kyoto' | 'lisbon' | 'almaty';
-export type SceneAnchor = { id: string; x: number; y: number; visible: boolean };
+export type SceneAnchor = { id: string; x: number; y: number; visible: boolean; occluded?: boolean };
+export type ScenePresentation = { city: CityId | null; place: number | null };
+export type SceneFrame = { story: number; origin: { x: number; y: number }; panel: number };
 export type FoldSceneOptions = {
   onReady: () => void;
   onError: (err: Error) => void;
-  onAnchors: (anchors: SceneAnchor[]) => void;
+  onAnchors: (anchors: SceneAnchor[], geometry?: Rect[]) => void;
   onState?: (state: string) => void;
+  onPresentation?: (presentation: ScenePresentation) => void;
+  onFrame?: (frame: SceneFrame) => void;
+  onSettled?: (target: FoldTarget) => void;
 };
-export type FoldTarget = { city: CityId | null; place: number | null; focus?: number | null; intro?: boolean; reducedMotion: boolean };
+export type FoldTarget = { city: CityId | null; place: number | null; focus?: number | null; intro?: boolean; reducedMotion: boolean; context?: string };
 type Hinge = { node: THREE.Object3D; closed: number; delay: number; base: THREE.Quaternion };
 const cities: CityId[] = ['kyoto', 'lisbon', 'almaty'];
 const X = new THREE.Vector3(1, 0, 0);
@@ -31,8 +37,15 @@ export class FoldScene {
   private anchors = new Map<string, THREE.Object3D>();
   private story: THREE.Object3D | null = null;
   private storyOriginal = new THREE.Vector3();
+  private presentation: ScenePresentation = { city: null, place: null };
+  private activeStory: ScenePresentation | null = null;
+  private geometryBounds: { city: CityId; node: THREE.Object3D; corners: THREE.Vector3[] }[] = [];
+  private framingBounds = new Map<THREE.Object3D, THREE.Vector3[]>();
+  private raycaster = new THREE.Raycaster();
+  private cameraDirection = new THREE.Vector3();
   private neckPivot = new THREE.Group();
   private tailPivot = new THREE.Group();
+  private wingPivot = new THREE.Group();
   private target: FoldTarget = { city: null, place: null, reducedMotion: false };
   private pose = { wing: 0, kyoto: 0, lisbon: 0, almaty: 0, story: 0, view: 0, intro: 1, dragX: 0, dragY: 0, zoom: 1, focus: 0, focusX: 0, focusY: 0, focusZ: 0, storyX: 0, storyZ: 0 };
   private transition: gsap.core.Timeline | null = null;
@@ -126,6 +139,13 @@ export class FoldScene {
       if (o.name === 'STORY_TAB') { this.story = o; this.storyOriginal.copy(o.position); this.pose.storyX = o.position.x; this.pose.storyZ = o.position.z; o.visible = false; }
       if ((o as THREE.Mesh).isMesh) {
         const mesh = o as THREE.Mesh; mesh.castShadow = true; mesh.receiveShadow = true; this.stats.meshes++;
+        mesh.geometry.computeBoundingBox();
+        const box = mesh.geometry.boundingBox;
+        if (box) {
+          const corners: THREE.Vector3[] = [];
+          for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) corners.push(new THREE.Vector3(x, y, z));
+          this.framingBounds.set(mesh, corners);
+        }
         const ms = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         for (const m of ms) {
           const p = m as THREE.MeshStandardMaterial;
@@ -139,9 +159,18 @@ export class FoldScene {
     for (const [id, root] of this.cityRoots) root.traverse(o => {
       if (o.userData.fold_role === 'architecture') this.hinges.get(id)!.push({ node: o, closed: Number(o.userData.fold_closed), delay: Number(o.userData.fold_delay || 0), base: o.quaternion.clone() });
     });
+    this.model.updateMatrixWorld(true);
+    for (const [city, hinges] of this.hinges) for (const { node } of hinges) {
+      const box = new THREE.Box3().setFromObject(node);
+      if (box.isEmpty() || box.max.y - box.min.y < .20) continue;
+      const corners: THREE.Vector3[] = [];
+      for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) corners.push(node.worldToLocal(new THREE.Vector3(x, y, z)));
+      this.geometryBounds.push({ city, node, corners });
+    }
     // Model is exported open at local X=0 for architecture, with all rigid sheets inspectable.
     this.attachPivot('CRANE_neck', this.neckPivot, new THREE.Vector3(-1.45, .25, .39));
     this.attachPivot('CRANE_tail', this.tailPivot, new THREE.Vector3(.35, .83, -.28));
+    this.attachPivot('WING_attachment', this.wingPivot, new THREE.Vector3(-.90, .69, .23));
   }
   private async preparePaper() {
     // Approved single Higgsfield washi generation, documented in the asset ledger.
@@ -190,65 +219,85 @@ export class FoldScene {
     const point = this.story.parent.worldToLocal(anchor.getWorldPosition(new THREE.Vector3()));
     return new THREE.Vector3(point.x + .10, this.storyOriginal.y, point.z + .07);
   }
+  private present(city: CityId | null, place: number | null) {
+    if (this.presentation?.city === city && this.presentation?.place === place) return;
+    this.presentation = { city, place };
+    this.options.onPresentation?.({ city, place });
+  }
   private animateStory(timeline: gsap.core.Timeline, next: FoldTarget, changingCity: boolean, duration: number) {
     const destination = this.storyDestination(next);
     if (!destination) {
       // Retain the actual origin throughout closing. Resetting it here teleports a visible sheet.
-      timeline.to(this.pose, { story: 0, duration: .25 * duration, ease: 'power2.in' }, 0);
+      timeline.to(this.pose, { story: 0, duration: .42 * duration, ease: 'power2.inOut' }, 0);
+      timeline.call(() => { this.activeStory = null; this.present(this.presentation?.city ?? next.city, null); }, [], .42 * duration);
       return;
     }
     const movingOrigin = Math.abs(this.pose.storyX - destination.x) > 1e-6 || Math.abs(this.pose.storyZ - destination.z) > 1e-6;
     const closeFirst = this.pose.story > 0 && (movingOrigin || changingCity);
-    const closedAt = closeFirst ? .25 * duration : 0;
+    const closedAt = closeFirst ? .42 * duration : 0;
     if (closeFirst) timeline.to(this.pose, { story: 0, duration: closedAt, ease: 'power2.in' }, 0);
     // A replacement timeline kills this pending relocation too. The origin changes only
     // at story=0, so interruptions always continue from the last physically displayed sheet.
     if (movingOrigin) timeline.set(this.pose, { storyX: destination.x, storyZ: destination.z, immediateRender: false }, closedAt);
-    timeline.to(this.pose, { story: 1, duration: .70 * duration, ease: 'power2.inOut' }, Math.max(closedAt, (changingCity ? 1.25 : .03) * duration));
+    const opensAt = Math.max(closedAt, (changingCity ? 1.43 : .03) * duration);
+    timeline.call(() => { this.activeStory = { city: next.city, place: next.place }; this.present(next.city, next.place); }, [], opensAt);
+    timeline.to(this.pose, { story: 1, duration: .86 * duration, ease: 'power2.inOut' }, opensAt);
   }
 
   setTarget(next: FoldTarget, force = false) {
     const prev = this.target;
     this.target = { ...next, focus: next.focus ?? null };
     if (!this.ready || this.disposed) return;
-    if (!force && prev.city === next.city && prev.place === next.place && (prev.focus ?? null) === (next.focus ?? null) && prev.intro === next.intro && prev.reducedMotion === next.reducedMotion) return;
+    if (!force && prev.city === next.city && prev.place === next.place && (prev.focus ?? null) === (next.focus ?? null) && prev.intro === next.intro && prev.reducedMotion === next.reducedMotion) {
+      if (!this.transition?.isActive() && !['unfolding', 'folding', 'intro'].includes(this.state)) this.options.onSettled?.(this.target);
+      return;
+    }
     // Finishing/skipping the intro updates React's remembered flag, not the physical pose.
     // Do not create a redundant folding timeline for that state-only acknowledgment.
-    if (!force && prev.city === next.city && prev.place === next.place && (prev.focus ?? null) === (next.focus ?? null) && prev.reducedMotion === next.reducedMotion && prev.intro && !next.intro && this.pose.intro === 1) return;
+    if (!force && prev.city === next.city && prev.place === next.place && (prev.focus ?? null) === (next.focus ?? null) && prev.reducedMotion === next.reducedMotion && prev.intro && !next.intro && this.pose.intro === 1) { this.options.onSettled?.(this.target); return; }
     this.transition?.kill(); this.transition = null;
     const fast = next.reducedMotion;
     if (next.intro && !this.startedIntro && !next.city && !fast) {
       this.startedIntro = true; this.pose.intro = 0; this.emit('intro');
-      this.transition = gsap.timeline({ onUpdate: () => this.invalidate(), onComplete: () => { this.emit('crane'); this.invalidate(); } });
-      this.transition.to(this.pose, { intro: 1, duration: 3.05, ease: 'power2.inOut' });
+      this.transition = gsap.timeline({ onUpdate: () => this.invalidate(), onComplete: () => { this.emit('crane'); this.options.onSettled?.(this.target); this.invalidate(); } });
+      this.transition.to(this.pose, { intro: 1, duration: 3.05, ease: 'power2.inOut' }, 0);
       return;
     }
     this.pose.intro = 1;
-    const changingCity = prev.city !== next.city || force;
+    // Intent may already name the new city while its presentation callback is
+    // still pending. A retarget must replace that pending commit, not lose it.
+    const changingCity = prev.city !== next.city || this.presentation?.city !== next.city || force;
     const duration = fast ? .12 : 1;
     this.transition = gsap.timeline({ onUpdate: () => this.invalidate(), onComplete: () => {
-      this.emit(next.place !== null && next.city ? 'place' : next.city ? 'city' : 'crane'); this.invalidate();
+      this.present(next.city, next.place);
+      this.emit(next.place !== null && next.city ? 'place' : next.city ? 'city' : 'crane'); this.options.onSettled?.(this.target); this.invalidate();
     } });
     const tl = this.transition;
     this.emit(next.city ? 'unfolding' : 'folding');
-    this.animateStory(tl, next, changingCity, duration);
+    this.animateStory(tl, next, changingCity || (!!next.city && this.pose[next.city] < .97), duration);
+    if (changingCity) tl.call(() => {
+      if (!this.activeStory || this.pose.story < .004) this.present(next.city, null);
+    }, [], (next.city ? .66 : 1.4) * duration);
     if (!next.city) {
       tl.to(this.pose, { kyoto: 0, lisbon: 0, almaty: 0, duration: .68 * duration, ease: 'power2.inOut' }, 0);
       tl.to(this.pose, { wing: 0, view: 0, focus: 0, duration: 1.05 * duration, ease: 'power2.inOut' }, .40 * duration);
     } else {
-      const others = Object.fromEntries(cities.filter(id => id !== next.city).map(id => [id, 0]));
-      tl.to(this.pose, { ...others, duration: .61 * duration, ease: 'power2.inOut' }, 0);
-      tl.to(this.pose, { wing: 1, view: 1, duration: 1.02 * duration, ease: 'power2.inOut' }, 0);
-      tl.to(this.pose, { [next.city]: 1, duration: 1.18 * duration, ease: 'power2.inOut' }, (changingCity ? .50 : 0) * duration);
+      const otherCities = cities.filter(id => id !== next.city);
+      if (changingCity || this.pose[next.city] < .999 || otherCities.some(id => this.pose[id] > .001)) {
+        const others = Object.fromEntries(otherCities.map(id => [id, 0]));
+        tl.to(this.pose, { ...others, duration: .61 * duration, ease: 'power2.inOut' }, 0);
+        tl.to(this.pose, { wing: 1, view: 1, duration: 1.02 * duration, ease: 'power2.inOut' }, 0);
+        tl.to(this.pose, { [next.city]: 1, duration: 1.18 * duration, ease: 'power2.inOut' }, (changingCity ? .50 : 0) * duration);
+      }
       const focus = this.focusDestination(next);
       if (focus && this.pose.focus === 0) {
         this.pose.focusX = focus.x; this.pose.focusY = focus.y; this.pose.focusZ = focus.z;
       }
-      tl.to(this.pose, {
-        focus: focus ? 1 : 0,
-        ...(focus ? { focusX: focus.x, focusY: focus.y, focusZ: focus.z } : {}),
-        duration: .7 * duration, ease: 'power2.inOut',
-      }, 0);
+      if (focus || this.pose.focus > .001) tl.to(this.pose, {
+          focus: focus ? 1 : 0,
+          ...(focus ? { focusX: focus.x, focusY: focus.y, focusZ: focus.z } : {}),
+          duration: .7 * duration, ease: 'power2.inOut',
+        }, 0);
     }
     this.invalidate();
   }
@@ -256,7 +305,7 @@ export class FoldScene {
   /** Explicit QA control: settle the real current timeline for static inspection only. */
   finishTransition() { this.transition?.progress(1); this.viewTween?.progress(1); this.render(); }
 
-  skipIntro() { if (this.state !== 'intro') return; this.transition?.kill(); this.pose.intro = 1; this.emit('crane'); this.invalidate(); }
+  skipIntro() { if (this.state !== 'intro') return; this.transition?.kill(); this.pose.intro = 1; this.pose.wing = 0; this.emit('crane'); this.options.onSettled?.(this.target); this.invalidate(); }
   resetView() { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { dragX: 0, dragY: 0, zoom: 1, duration: this.target.reducedMotion ? .1 : .65, ease: 'power2.out', onUpdate: () => this.invalidate() }); }
   rotate(delta: number) { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { dragX: clamp(this.pose.dragX + delta, -.34, .34), duration: this.target.reducedMotion ? .1 : .4, onUpdate: () => this.invalidate() }); }
   zoom(delta: number) { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { zoom: clamp(this.pose.zoom + delta, .82, 1.32), duration: .3, onUpdate: () => this.invalidate() }); }
@@ -303,6 +352,9 @@ export class FoldScene {
     this.orbit.position.y = (1 - smooth(p.intro)) * -.12;
     this.neckPivot.rotation.z = (1 - smooth(p.intro)) * .62;
     this.tailPivot.rotation.z = (1 - smooth(p.intro)) * -1.20;
+    // The entire physical wing, including covers, landmarks and anchors, unfolds
+    // from its body hinge. The final pose is the intact home crane.
+    if (this.wingPivot) this.wingPivot.rotation.z = (1 - smooth((p.intro - .08) / .84)) * 1.12;
     for (const c of this.covers) c.node.rotation.x = c.open * smooth(p.wing);
     for (const [id, root] of this.cityRoots) {
       const rise = p[id]; root.visible = rise > .002;
@@ -321,11 +373,11 @@ export class FoldScene {
     this.model.updateMatrixWorld(true); this.frameCamera();
   }
   private frameCamera() {
-    const aspect = this.width / this.height; const mobile = this.width < 760;
+    const aspect = this.width / this.height; const mobile = this.width <= 800;
     const v = smooth(this.pose.view), story = smooth(this.pose.story);
     // Fit both actual width and height. Desktop leaves 34% canvas clear for readable HTML.
-    const fitWidth = mobile ? 9.5 : THREE.MathUtils.lerp(11.0, 15.9, v);
-    const fitHeight = mobile ? 5.3 : 5.75;
+    const fitWidth = mobile ? 7.3 : THREE.MathUtils.lerp(11.0, 15.9, v);
+    const fitHeight = mobile ? 4.3 : 5.75;
     let halfH = Math.max(fitHeight / 2, fitWidth / (2 * aspect));
     halfH /= this.pose.zoom;
     this.camera.left = -halfH * aspect; this.camera.right = halfH * aspect; this.camera.top = halfH; this.camera.bottom = -halfH;
@@ -336,28 +388,95 @@ export class FoldScene {
       target.x += (this.focusPoint.x - 2.2) * .15 * this.pose.focus;
       target.y += (this.focusPoint.y - 1.4) * .13 * this.pose.focus;
     }
-    const cameraOffset = new THREE.Vector3(1.3, 5.7 + (mobile ? .5 : 0) + v * .2, 12.5);
+    // The phone gets a distinct, more diagonal view: the unfolded wing has depth,
+    // while the neck and tail remain part of the same silhouette.
+    const cameraOffset = mobile ? new THREE.Vector3(3.5 + v * 1.9, 7.7 + v * 1.2, 12.5) : new THREE.Vector3(1.3, 5.7 + v * .2, 12.5);
     this.camera.position.copy(target).add(cameraOffset); this.camera.lookAt(target);
     if (story > .01 && !mobile) this.camera.position.y += story * .10;
     this.camera.updateProjectionMatrix(); this.camera.updateMatrixWorld();
+    if (mobile && this.framingBounds?.size) {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      const point = new THREE.Vector3();
+      const foldingPoints: { x: number; y: number; weight: number }[] = [];
+      this.model.traverseVisible(node => {
+        let weight: number | null = null;
+        for (let parent: THREE.Object3D | null = node; parent && parent !== this.model; parent = parent.parent) {
+          if (parent.name.startsWith('CITY_')) weight = smooth(this.pose[parent.name.slice(5) as CityId]);
+          if (parent.name === 'STORY_TAB') weight = smooth(this.pose.story);
+        }
+        for (const corner of this.framingBounds.get(node) || []) {
+          point.copy(corner).applyMatrix4(node.matrixWorld).applyMatrix4(this.camera.matrixWorldInverse);
+          if (weight !== null) foldingPoints.push({ x: point.x, y: point.y, weight });
+          else { minX = Math.min(minX, point.x); maxX = Math.max(maxX, point.x); minY = Math.min(minY, point.y); maxY = Math.max(maxY, point.y); }
+        }
+      });
+      if (Number.isFinite(minX)) {
+        const base = { minX, minY, maxX, maxY };
+        for (const p of foldingPoints) {
+          // Blend a rising sheet's extra extent into the crane envelope. The
+          // .002/.004 visibility thresholds cannot abruptly zoom the camera.
+          minX = Math.min(minX, base.minX + Math.min(0, p.x - base.minX) * p.weight);
+          maxX = Math.max(maxX, base.maxX + Math.max(0, p.x - base.maxX) * p.weight);
+          minY = Math.min(minY, base.minY + Math.min(0, p.y - base.minY) * p.weight);
+          maxY = Math.max(maxY, base.maxY + Math.max(0, p.y - base.maxY) * p.weight);
+        }
+        // Fit actual visible geometry, including the head and tail, rather than
+        // a large fixed square. Reserve the bottom strip for 44px view controls.
+        const topSpace = THREE.MathUtils.lerp(114, 12, v), bottomSpace = 60;
+        const usable = Math.max(.42, 1 - (topSpace + bottomSpace) / this.height);
+        halfH = Math.max((maxY - minY) / (2 * usable), (maxX - minX) / (2 * aspect * .91)) / this.pose.zoom;
+        const shift = new THREE.Vector3((minX + maxX) / 2, (minY + maxY) / 2 + halfH * (topSpace - bottomSpace) / this.height, 0).applyQuaternion(this.camera.quaternion);
+        this.camera.position.add(shift);
+        this.camera.left = -halfH * aspect; this.camera.right = halfH * aspect; this.camera.top = halfH; this.camera.bottom = -halfH;
+        this.camera.updateProjectionMatrix(); this.camera.updateMatrixWorld();
+      }
+    }
   }
   private updateAnchors() {
     const items: SceneAnchor[] = [];
+    const geometry: Rect[] = [];
+    for (const bound of this.geometryBounds) {
+      if (bound.city !== this.target.city || this.pose[bound.city] < .82) continue;
+      let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
+      for (const corner of bound.corners) {
+        this.projected.copy(corner).applyMatrix4(bound.node.matrixWorld).project(this.camera);
+        const x = (this.projected.x * .5 + .5) * this.width, y = (-this.projected.y * .5 + .5) * this.height;
+        left = Math.min(left, x); right = Math.max(right, x); top = Math.min(top, y); bottom = Math.max(bottom, y);
+      }
+      geometry.push({ left, top, right, bottom });
+    }
     for (const [id, node] of this.anchors) {
       const isCity = id.startsWith('city-');
       const relevant = isCity ? !this.target.city && this.pose.wing < .18 && this.pose.intro > .94 : !!this.target.city && id.startsWith(this.target.city + '-poi-') && this.pose[this.target.city] > .82 && this.target.place === null;
       if (!isCity && !id.startsWith((this.target.city || '__') + '-poi-')) continue;
-      node.getWorldPosition(this.projected); this.projected.project(this.camera);
+      node.getWorldPosition(this.projected);
+      let occluded = false;
+      if (relevant && !isCity) {
+        this.camera.getWorldDirection(this.cameraDirection);
+        const origin = this.projected.clone().addScaledVector(this.cameraDirection, -40);
+        this.raycaster.set(origin, this.cameraDirection); this.raycaster.far = 39.82;
+        const root = this.cityRoots.get(this.target.city!);
+        if (root) occluded = this.raycaster.intersectObject(root, true).length > 0;
+      }
+      this.projected.project(this.camera);
       const x = (this.projected.x * .5 + .5) * this.width, y = (-this.projected.y * .5 + .5) * this.height;
-      items.push({ id: isCity ? id : id.replace(this.target.city + '-', ''), x, y, visible: relevant && x > 28 && x < this.width - 28 && y > 20 && y < this.height - 20 && this.projected.z > -1 && this.projected.z < 1 });
+      items.push({ id: isCity ? id : id.replace(this.target.city + '-', ''), x, y, occluded, visible: relevant && !occluded && this.projected.z > -1 && this.projected.z < 1 });
     }
     const hash = items.map(a => `${a.id}:${Math.round(a.x)}:${Math.round(a.y)}:${a.visible}`).join('|');
-    if (hash !== this.lastAnchorHash) { this.lastAnchorHash = hash; this.options.onAnchors(items); }
+    // The DOM's measured rectangles can change with language and viewport even at
+    // the same anchor coordinates. Re-layout on every actual rendered frame.
+    this.lastAnchorHash = hash; this.options.onAnchors(items, geometry);
+  }
+  private updatePresentationFrame() {
+    const origin = this.story ? this.story.getWorldPosition(this.projected).project(this.camera) : this.projected.set(0, 0, 0);
+    const city = this.presentation?.city;
+    const panel = city ? smooth((this.pose[city] - .78) / .20) : smooth((.20 - this.pose.wing) / .20);
+    this.options.onFrame?.({ story: this.pose.story, origin: { x: (origin.x * .5 + .5) * this.width, y: (-origin.y * .5 + .5) * this.height }, panel });
   }
   private invalidate() { this.dirty = true; this.activeUntil = performance.now() + 150; }
   private render() {
     if (!this.ready || this.disposed) return;
-    this.applyPose(); this.renderer.render(this.scene, this.camera); this.updateAnchors();
+    this.applyPose(); this.renderer.render(this.scene, this.camera); this.updateAnchors(); this.updatePresentationFrame();
     this.stats.frames++; this.stats.draws = this.renderer.info.render.calls; this.stats.triangles = this.renderer.info.render.triangles; this.stats.geometries = this.renderer.info.memory.geometries;
     this.dirty = false;
   }

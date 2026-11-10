@@ -14,7 +14,12 @@
       946
     ],
     "samples": 24,
-    "alpha_border_max": 0
+    "alpha_border_max": 0,
+    "model_sha256": "91734771bc8efdb67461ce5a864c0542fdb5ac9795598c5c087e1d11751b10a1",
+    "source_png_sha256": "edbc4138cca3a86e6061bf8589d91fe3aaa7fabc540e0bd6d7021346ca05e5e5",
+    "sha256": "2f0924d5db131d1327752c45baba1670b245007073706ae25463338658283309",
+    "equivalent_packed_master_sha256": "38c7df03d9a131c890eb6cd5f182e546975d57629eba2dc2b4a7337165f139b0",
+    "packing_audit": "proof/source-pack-audit.json"
   },
   {
     "file": "kyoto.webp",
@@ -22,7 +27,7 @@
       1245,
       770
     ],
-    "bytes": 62272,
+    "bytes": 63496,
     "source": "Transparent model-only CPU Cycles render of the actual master. Ground plane hidden; no shadow catcher or baked background.",
     "crop": [
       105,
@@ -31,7 +36,12 @@
       946
     ],
     "samples": 24,
-    "alpha_border_max": 0
+    "alpha_border_max": 0,
+    "model_sha256": "91734771bc8efdb67461ce5a864c0542fdb5ac9795598c5c087e1d11751b10a1",
+    "source_png_sha256": "52b8bc3b87e42464af140a4c97638f53b2aa7293cd04bd2754d8155a49ed2fcb",
+    "sha256": "c7b6300e87af039b8c7f5b22f3d9467185f7c9a42e97860793a252877380dbaa",
+    "equivalent_packed_master_sha256": "38c7df03d9a131c890eb6cd5f182e546975d57629eba2dc2b4a7337165f139b0",
+    "packing_audit": "proof/source-pack-audit.json"
   },
   {
     "file": "lisbon.webp",
@@ -39,7 +49,7 @@
       1245,
       770
     ],
-    "bytes": 59546,
+    "bytes": 60264,
     "source": "Transparent model-only CPU Cycles render of the actual master. Ground plane hidden; no shadow catcher or baked background.",
     "crop": [
       105,
@@ -48,7 +58,12 @@
       946
     ],
     "samples": 24,
-    "alpha_border_max": 0
+    "alpha_border_max": 0,
+    "model_sha256": "91734771bc8efdb67461ce5a864c0542fdb5ac9795598c5c087e1d11751b10a1",
+    "source_png_sha256": "956621fc90b0744e66475e38ed330304d66d92720aff14a57326841600c3165e",
+    "sha256": "58d9e6a00806f76af8b26d3f8b2f3b264c3577743f05ce67501ad26e605d2808",
+    "equivalent_packed_master_sha256": "38c7df03d9a131c890eb6cd5f182e546975d57629eba2dc2b4a7337165f139b0",
+    "packing_audit": "proof/source-pack-audit.json"
   },
   {
     "file": "almaty.webp",
@@ -65,6 +80,11 @@
       946
     ],
     "samples": 24,
-    "alpha_border_max": 0
+    "alpha_border_max": 0,
+    "model_sha256": "91734771bc8efdb67461ce5a864c0542fdb5ac9795598c5c087e1d11751b10a1",
+    "source_png_sha256": "c02d26e75b2dda8918ac49f0b8d027d7d1db2bf1a052da7249a7cdbe04373610",
+    "sha256": "085685426de0b266bad0df65f456ed5a4247d411655e07ced3851331562550d2",
+    "equivalent_packed_master_sha256": "38c7df03d9a131c890eb6cd5f182e546975d57629eba2dc2b4a7337165f139b0",
+    "packing_audit": "proof/source-pack-audit.json"
   }
 ]

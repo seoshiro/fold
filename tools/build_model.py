@@ -254,7 +254,7 @@ K=cityroot('kyoto')
 river(K,lambda t:(1.10+3.26*t,-1.52+.58*math.sin(t*math.pi*2-.9)),.20)
 for x,y,w,h in [(1.1,-.82,.33,.40),(1.5,-1.08,.36,.37),(1.89,-1.10,.32,.45),(2.25,-1.20,.31,.34),(2.60,-.93,.38,.46),(3.43,-.66,.36,.42),(3.87,-.55,.33,.37)]:
  b=empty('Kyoto machiya foundation',K,(x,y,.035));boxwalls('Machiya',w,.10,h,b,gable=.14)
-# Temple five roof layers supported by printed die-cut tier cards.
+# Unnamed decorative Kyoto pagoda motif; never used as the Kiyomizu place anchor.
 pag=hinge('Kyoto temple pop-up',K,(3.72,.04,.03),closed=1.57,delay=.15)
 for level in range(4):
  z=.05+level*.23;w=.56-level*.085;h=.20
@@ -277,49 +277,116 @@ for yy in [-.08,.08]:
  for j in range(7):
   x=-.33+j*.11;z=.08+.16*math.sin((j*.11+.03)/.72*math.pi);line('Bridge rail post',[(x,yy,0),(x,yy,z)],RED,.009,br)
 line('Bridge deck folded edge',[(-.38,0,.01),(0,0,.13),(.38,0,.01)],ROOF,.035,br)
-for x,y,h in [(1.13,-.45,.55),(1.70,-.55,.50),(2.74,.03,.56),(3.33,-.95,.45),(4.17,-.80,.43)]:tree(K,x,y,h,True)
-hall=hinge('Kiyomizu broad veranda hall',K,(2.56,.04,.03),closed=1.57,delay=.16)
-for xx in [-.39,-.13,.13,.39]:
- line('Veranda timber paper strut',[(xx,0,0),(xx,0,.36)],ROOF,.014,hall)
-rect('Broad temple hall',-.46,.46,-.018,.34,.65,PAPER,hall)
-for xx in [-.35,-.18,0,.18,.35]:window(hall,xx,.40,.08,.18,material=RED)
-roof(hall,0,.04,.66,1.12,.24,ROOF)
-line('Veranda rail',[(-.52,-.10,.36),(.52,-.10,.36)],RED,.008,hall)
-for xx in [-.48,-.24,0,.24,.48]:line('Veranda posts',[(xx,-.1,.25),(xx,-.1,.40)],RED,.006,hall)
-place_anchor('kyoto',0,(2.56,-.05,.96));place_anchor('kyoto',1,(1.60,-1.50,.65));place_anchor('kyoto',2,(2.80,-1.25,.37))
+for x,y,h in [(1.13,-.45,.55),(1.70,-.55,.45),(3.21,-.08,.40),(3.33,-.95,.40),(4.17,-.80,.43)]:tree(K,x,y,h,True)
+hall=hinge('Kiyomizu broad veranda hall',K,(2.56,-.11,.03),closed=1.57,delay=.16)
+# Broad hillside stage, open timber trestles and projecting eaves distinguish the
+# Kiyomizu-inspired hall from the small decorative pagoda. All are thin cards.
+for xx in [-.53,-.265,0,.265,.53]:
+ rect('Veranda timber upright',xx-.014,xx+.014,-.035,0,.49,ROOF,hall)
+ line('Veranda timber paper strut',[(xx-.105,-.036,.04),(xx+.105,-.036,.44)],ROOF,.012,hall)
+rect('Veranda stage fascia',-.62,.62,-.20,.42,.48,ROOF,hall)
+sheet('Veranda folded stage',[(-.62,-.20,.48),(.62,-.20,.48),(.62,.13,.48),(-.62,.13,.48)],parent=hall)
+rect('Broad temple hall',-.53,.53,.012,.48,.83,PAPER,hall)
+for xx in [-.43,-.215,0,.215,.43]:window(hall,xx,.51,.115,.25,y=-.002,material=ROOF)
+for xx in [-.54,.54]:
+ rect('Temple corner timber',xx-.013,xx+.013,-.015,.48,.85,ROOF,hall)
+sheet('Temple shallow side fold',[(-.53,.012,.48),(-.53,.13,.48),(-.53,.13,.83),(-.53,.012,.83)],parent=hall)
+# Broad hipped roof with a long ridge and lifted corner facets, rather than a
+# stack of pagoda roofs. Open footprint remains inside the common wing.
+rv=[(-.75,-.25,.86),(.75,-.25,.86),(.73,.28,.86),(-.73,.28,.86),(-.45,.035,1.04),(.45,.035,1.04)]
+sheet('Kiyomizu long hipped roof',rv,[[0,1,5,4],[1,2,5],[2,3,4,5],[3,0,4]],ROOF,hall,thick=.006)
+line('Temple dark eave',[(-.75,-.25,.855),(.75,-.25,.855)],ROOF,.018,hall)
+for xx in [-.6,-.45,-.3,-.15,0,.15,.3,.45,.6]:
+ line('Temple roof crease',[(xx,-.25,.868),(max(-.45,min(.45,xx)),.035,1.047)],SHADE,.0025,hall)
+line('Veranda rail',[(-.62,-.22,.62),(.62,-.22,.62)],RED,.010,hall)
+for xx in [-.60,-.40,-.20,0,.20,.40,.60]:line('Veranda posts',[(xx,-.22,.48),(xx,-.22,.65)],RED,.007,hall)
+br.scale=(1.10,1.10,1.10)
+place_anchor('kyoto',0,(2.56,-.11,1.14));place_anchor('kyoto',1,(1.60,-1.50,.65));place_anchor('kyoto',2,(2.80,-1.25,.43))
 
-# LISBON — terraced façades, azulejo, yellow tram, tower and sailing paper.
+# LISBON — separated hillside terraces, varied roof silhouettes, yellow tram,
+# and the broad riverside bastion of an explicitly artistic Belem interpretation.
 L=cityroot('lisbon')
-river(L,lambda t:(1.50+2.78*t,-1.68+.15*math.sin(t*math.pi)),.34)
-for i,(x,y,w,h) in enumerate([(1.20,-1.14,.32,.55),(1.56,-1.07,.34,.70),(1.95,-.91,.39,.61),(2.40,-.84,.33,.81),(2.81,-.77,.34,.58),(3.22,-.58,.39,.72),(3.66,-.50,.38,.51),(4.10,-.35,.31,.40),(1.7,-.22,.31,.48),(2.15,.05,.36,.57)]):
- b=empty('Lisbon stepped foundation',L,(x,y+.27,.025));p=boxwalls('Lisbon townhouse',w,.10,h,b,material=GOLD if i%3==0 else PAPER,gable=.12)
+river(L,lambda t:(1.50+2.78*t,-1.87+.12*math.sin(t*math.pi)),.25)
+# Ten existing townhouse hinges retained. Foundations are continuous folded
+# paper risers, not floating blocks. The back row rises to a different skyline.
+houses=[(1.14,-.86,.33,.43,.00,'gable'),(1.56,-.74,.32,.57,.06,'hip'),
+ (1.98,-.63,.38,.45,.13,'flat'),(2.47,-.49,.41,.62,.19,'hip'),
+ (2.98,-.30,.39,.43,.14,'gable'),(3.44,-.16,.34,.36,.07,'hip'),
+ (1.66,-.22,.28,.53,.04,'flat'),(2.08,.00,.32,.65,.10,'gable'),
+ (2.62,.07,.36,.54,.21,'hip'),(3.12,.12,.31,.41,.14,'flat')]
+for i,(x,y,w,h,lift,kind) in enumerate(houses):
+ b=empty('Lisbon stepped foundation',L,(x,y,.025))
+ p=boxwalls('Lisbon townhouse',w,.12,h,b,material=GOLD if i in [0,3,8] else PAPER,gable=.12 if kind=='gable' else 0,roofmat=ROOF)
+ # Lift the paper facade from its own baseline without moving the physical hinge.
+ for ob in p.children:
+  if ob.type=='MESH':
+   for v in ob.data.vertices:v.co.z+=lift
+ if lift:
+  rect('Hillside folded terrace face',-w*.62,w*.62,-.042,0,lift,LIGHT,p)
+  sheet('Hillside thin terrace landing',[(-w*.62,-.042,lift),(w*.62,-.042,lift),(w*.62,.15,lift),(-w*.62,.15,lift)],parent=p)
+  for z in [lift*.35,lift*.70]:line('Hillside terrace contour',[(-w*.61,-.047,z),(w*.61,-.047,z)],FAINT,.002,p)
+ if kind=='hip':
+  # Long terracotta ridge, distinct from both triangular and parapet silhouettes.
+  verts=[(-w*.59,-.035,h+lift),(w*.59,-.035,h+lift),(w*.59,.155,h+lift),(-w*.59,.155,h+lift),(-w*.25,.06,h+lift+.115),(w*.25,.06,h+lift+.115)]
+  sheet('Lisbon hipped terracotta roof',verts,[[0,1,5,4],[1,2,5],[2,3,4,5],[3,0,4]],ROOF,p)
+ elif kind=='flat':
+  rect('Lisbon scalloped parapet',-w*.53,w*.53,-.012,h+lift-.025,h+lift+.065,PAPER,p)
+  rect('Lisbon blue parapet stripe',-w*.53,w*.53,-.017,h+lift+.012,h+lift+.034,TILE,p)
  if i in [1,4,6]:
   for zz in [h*.30,h*.55,h*.80]:
    for xx in [-w*.29,0,w*.29]:
-    sheet('Azulejo diamond',[(xx-.022,-.013,zz),(xx,-.013,zz+.022),(xx+.022,-.013,zz),(xx,-.013,zz-.022)],material=TILE,parent=p,thick=.001)
-tram=hinge('Yellow tram pop-up',L,(2.18,-1.32,.03),closed=1.57,delay=.12)
-sheet('Tram yellow body',[(-.28,0,.04),(.28,0,.04),(.26,0,.34),(-.26,0,.34)],material=GOLD,parent=tram)
-rect('Tram ivory window band',-.25,.25,-.007,.17,.32,PAPER,tram)
-for x in [-.19,-.06,.07,.20]:window(tram,x,.19,w=.085,h=.105)
-for x in [-.17,.17]:
- sheet('Tram wheel',[(x-.035,0,.015),(x+.035,0,.015),(x+.035,0,.07),(x-.035,0,.07)],material=BLACK,parent=tram)
-line('Tram roof', [(-.28,0,.35),(.28,0,.35)],INK,.014,tram)
-line('Tram pantograph',[(-.03,0,.35),(.08,0,.51),(.13,0,.51)],INK,.006,tram)
-for offs in [-.09,.09]:line('Tram ink track',[(1.0,-1.23+offs,.02),(2.1,-1.30+offs,.02),(3.18,-.91+offs,.02)],FAINT,.005,L)
-# Maritime tower paper silhouette, not a claimed exact monument scan.
-tower=hinge('Belem-inspired paper tower',L,(3.88,-.85,.025),closed=1.57,delay=.10)
-rect('Tower main façade',-.18,.18,0,0,.70,PAPER,tower)
-rect('Tower upper ledge',-.21,.21,-.012,.56,.61,LIGHT,tower)
-for xx in [-.17,0,.17]:
- rect('Tower crenellation',xx-.035,xx+.035,0,.69,.78,PAPER,tower)
-for zz in [.15,.35,.53]:
- for xx in [-.09,.09]:window(tower,xx,zz,.06,.09)
-# Sails near the river edge.
-sail=hinge('Tagus folded sail',L,(3.31,-1.72,.025),closed=1.57,delay=.08)
+    sheet('Azulejo diamond',[(xx-.022,-.013,zz+lift),(xx,-.013,zz+lift+.022),(xx+.022,-.013,zz+lift),(xx,-.013,zz+lift-.022)],material=TILE,parent=p,thick=.001)
+ if i in [1,3,7]:
+  z=lift+h*.54
+  sheet('Lisbon folded balcony',[(-w*.43,-.012,z),(w*.43,-.012,z),(w*.43,-.09,z),(-w*.43,-.09,z)],material=LIGHT,parent=p)
+  line('Lisbon balcony rail',[(-w*.43,-.09,z+.07),(w*.43,-.09,z+.07)],INK,.004,p)
+  for k in range(5):
+   xx=(k/4-.5)*w*.86;line('Lisbon balcony baluster',[(xx,-.09,z),(xx,-.09,z+.07)],INK,.003,p)
+# Printed climbing lanes help read two hills without adding rigid landscape blocks.
+for offset in [0,.04]:
+ line('Lisbon climbing lane',[(1.0,-.98+offset,.024),(1.45,-.91+offset,.024),(1.58,-.48+offset,.024),(2.08,-.40+offset,.024),(2.20,-.13+offset,.024),(2.92,-.01+offset,.024)],FAINT,.003,L)
+tram=hinge('Yellow tram pop-up',L,(2.15,-1.48,.03),closed=1.57,delay=.12)
+sheet('Tram yellow body',[(-.41,0,.045),(.41,0,.045),(.40,0,.34),(.34,0,.405),(-.34,0,.405),(-.40,0,.34)],material=GOLD,parent=tram)
+rect('Tram ivory window band',-.36,.36,-.009,.20,.375,PAPER,tram)
+for x in [-.275,-.137,0,.137,.275]:window(tram,x,.225,w=.105,h=.13,y=-.020)
+rect('Tram yellow lower stripe',-.38,.38,-.015,.12,.165,GOLD,tram)
+for xx in [-.23,.23]:
+ sheet('Tram wheel',[(xx-.045,0,.015),(xx+.045,0,.015),(xx+.045,0,.085),(xx-.045,0,.085)],material=BLACK,parent=tram)
+# Visible return and curved paper roof distinguish the vehicle from a facade.
+sheet('Tram front return',[(.40,0,.07),(.40,.15,.07),(.40,.15,.34),(.40,0,.34)],material=GOLD,parent=tram)
+sheet('Tram folded ivory roof',[(-.42,-.025,.382),(.42,-.025,.382),(.38,.065,.43),(-.38,.065,.43),(-.42,.17,.382),(.42,.17,.382)],[[0,1,2,3],[3,2,5,4]],PAPER,tram)
+line('Tram roof rim',[(-.42,-.026,.385),(.42,-.026,.385)],INK,.010,tram)
+line('Tram pantograph',[(-.06,.06,.43),(.04,.06,.59),(.17,.06,.59)],INK,.007,tram)
+for xx in [-.35,.35]:rect('Tram end lamp',xx-.018,xx+.018,-.018,.11,.155,LIGHT,tram)
+for offs in [-.08,.08]:line('Tram ink track',[(1.0,-1.43+offs,.02),(2.5,-1.48+offs,.02),(3.30,-1.22+offs,.02)],FAINT,.005,L)
+# Broad bastion, tower loggia, projecting turrets and crenellations. This remains
+# a die-cut paper interpretation, not a dimensionally accurate monument model.
+tower=hinge('Belem-inspired paper tower',L,(4.02,-.91,.025),closed=1.57,delay=.10)
+rect('Tower main facade',-.245,.245,.015,.26,1.00,PAPER,tower)
+sheet('Tower shallow return',[(-.245,.015,.26),(-.245,.17,.26),(-.245,.17,1.0),(-.245,.015,1.0)],parent=tower)
+sheet('Belem broad bastion',[(-.54,-.025,0),(.54,-.025,0),(.49,-.025,.33),(-.49,-.025,.33)],material=PAPER,parent=tower)
+sheet('Bastion folded terrace',[(-.54,-.025,.31),(.54,-.025,.31),(.45,.20,.31),(-.45,.20,.31)],parent=tower)
+for z in [.34,.66,.95]:rect('Tower limestone ledge',-.28,.28,-.018,z,z+.036,LIGHT,tower)
+def arch(parent,name,x,z,w,h,y=-.03):
+ r=w/2
+ verts=[(x-r,y,z),(x+r,y,z),(x+r,y,z+h-r)]
+ for k in range(1,7):
+  a=k*math.pi/6;verts.append((x+r*math.cos(a),y,z+h-r+r*math.sin(a)))
+ sheet(name,verts,material=INK,parent=parent,thick=.001)
+for xx in [-.16,0,.16]:arch(tower,'Belem arched loggia',xx,.70,.095,.18)
+for xx in [-.13,.13]:arch(tower,'Belem narrow window',xx,.43,.065,.13)
+for xx in [-.34,-.17,0,.17,.34]:arch(tower,'Bastion open arcade',xx,.075,.10,.17,y=-.031)
+for xx in [-.225,-.113,0,.113,.225]:rect('Tower crenellation',xx-.035,xx+.035,.010,.995,1.075,PAPER,tower)
+for xx,z in [(-.285,.84),(.285,.84),(-.48,.22),(.48,.22)]:
+ sheet('Belem projecting turret',[(xx-.065,-.045,z),(xx+.065,-.045,z),(xx+.075,-.045,z+.15),(xx-.075,-.045,z+.15)],material=PAPER,parent=tower)
+ sheet('Belem turret folded cap',[(xx-.092,-.047,z+.15),(xx,-.065,z+.29),(xx+.092,-.047,z+.15)],material=LIGHT,parent=tower)
+ line('Turret central fold',[(xx,-.052,z+.155),(xx,-.065,z+.28)],SHADE,.0025,tower)
+# Sails near the river edge, clearly separate from the larger tower.
+sail=hinge('Tagus folded sail',L,(3.19,-1.83,.025),closed=1.57,delay=.08)
 line('Sail mast',[(0,0,0),(0,0,.47)],SHADE,.005,sail)
 sheet('Triangular paper sail',[(0,0,.43),(.23,0,.07),(0,0,.07)],material=WHITE,parent=sail)
-for x,y,h in [(1.04,-.57,.40),(2.86,-.20,.43),(3.62,.10,.39)]:tree(L,x,y,h)
-place_anchor('lisbon',0,(2.55,-.75,.95));place_anchor('lisbon',1,(2.18,-1.32,.62));place_anchor('lisbon',2,(3.88,-.85,.91))
+for x,y,h in [(1.02,-.55,.35),(2.87,-.02,.34),(3.55,.10,.31)]:tree(L,x,y,h)
+place_anchor('lisbon',0,(2.47,-.35,1.12));place_anchor('lisbon',1,(2.15,-1.48,.72));place_anchor('lisbon',2,(4.02,-.91,1.21))
 
 # ALMATY — layered mountain cuts, avenues, and a cathedral-inspired card.
 A=cityroot('almaty')

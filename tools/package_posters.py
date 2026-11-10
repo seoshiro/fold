@@ -1,7 +1,7 @@
 """Crop transparent Blender renders consistently and encode browser-ready RGBA WebP."""
 from pathlib import Path
 from PIL import Image
-import json
+import json,hashlib
 ROOT=Path(__file__).resolve().parents[1];report=[]
 for name in ['crane','kyoto','lisbon','almaty']:
  p=ROOT/'public/posters'/f'{name}.png'
@@ -15,6 +15,7 @@ for name in ['crane','kyoto','lisbon','almaty']:
  im=im.crop(crop)
  out=ROOT/'public/posters'/f'{name}.webp';im.save(out,'WEBP',quality=88,method=4)
  report.append({'file':out.name,'dimensions':im.size,'bytes':out.stat().st_size,'source':'Transparent model-only CPU Cycles render of the actual master. Ground plane hidden; no shadow catcher or baked background.','crop':crop,'samples':24,'alpha_border_max':max(im.getchannel('A').crop((0,0,im.width,1)).getextrema()[1],im.getchannel('A').crop((0,im.height-1,im.width,im.height)).getextrema()[1],im.getchannel('A').crop((0,0,1,im.height)).getextrema()[1],im.getchannel('A').crop((im.width-1,0,im.width,im.height)).getextrema()[1])})
+ report[-1].update({'model_sha256':hashlib.sha256((ROOT/'model/fold-master.blend').read_bytes()).hexdigest(),'source_png_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'sha256':hashlib.sha256(out.read_bytes()).hexdigest()})
  print(out.name,im.size,out.stat().st_size,flush=True)
  if p.parent==ROOT/'public/posters':
   archive=ROOT/'model/proof/posters'/p.name;archive.parent.mkdir(parents=True,exist_ok=True);p.replace(archive)

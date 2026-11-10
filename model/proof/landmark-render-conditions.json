@@ -1,0 +1,39 @@
+{
+  "source": "model/fold-master.blend",
+  "source_sha256": "91734771bc8efdb67461ce5a864c0542fdb5ac9795598c5c087e1d11751b10a1",
+  "engine": "Cycles CPU",
+  "blender": "4.3.2",
+  "samples": 24,
+  "denoising": false,
+  "resolution": [
+    1400,
+    1000
+  ],
+  "threads": 4,
+  "thread_mode": "FIXED",
+  "camera": [
+    2.4000000953674316,
+    -9.5,
+    6.699999809265137
+  ],
+  "target": [
+    1.649999976158142,
+    -0.75,
+    1.4800000190734863
+  ],
+  "orthographic_scale": 4.8,
+  "views": [
+    {
+      "file": "kyoto-landmarks.png",
+      "city": "kyoto",
+      "pose": 1
+    },
+    {
+      "file": "lisbon-landmarks.png",
+      "city": "lisbon",
+      "pose": 1
+    }
+  ],
+  "equivalent_packed_master_sha256": "38c7df03d9a131c890eb6cd5f182e546975d57629eba2dc2b4a7337165f139b0",
+  "packing_audit": "source-pack-audit.json"
+}
