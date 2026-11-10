@@ -4,9 +4,9 @@
 
 [Review the coherent-journey revision](https://seoshiro.github.io/fold/review/) · [Previous FOLD preview](https://seoshiro.github.io/fold/) · [Portfolio](https://seoshiro.github.io/) · [Model source](model/fold-master.blend)
 
-![Kyoto open in the live FOLD preview](docs/media/desktop-kyoto.jpg)
+![Kyoto open in the current FOLD review](docs/evidence/revision-browser/kyoto-city.jpg)
 
-*Actual desktop WebGL screenshot, application revision `2397591`. This endpoint was completed with the explicit static-inspection control; it is not proof of motion quality.*
+*Actual laptop Chrome WebGL still, review runtime revision `49f4446`. A still image is not evidence of continuous motion quality or frame rate.*
 
 ## One object, three places
 
@@ -54,7 +54,7 @@ The review edition retains the existing atlas and makes one pose responsible for
 
 Kyoto has a wider temple hall and veranda; Lisbon has stepped hillside cards, a distinct tram and broader Belém silhouette. The opening now articulates the real wing attachment. No new paid generation was used. The original source remains recoverable in `checkpoint/pre-journey-review`; updated source work is in `revision/coherent-journey`.
 
-[Revision plan and acceptance gates](docs/REVISION_PLAN.md) · [Navigation contract](docs/NAVIGATION_INTEGRATION.md)
+[Revision report in Russian](docs/REVISION_RU.md) · [Revision plan and acceptance gates](docs/REVISION_PLAN.md) · [Navigation contract](docs/NAVIGATION_INTEGRATION.md)
 
 ## Run locally
 
@@ -79,6 +79,6 @@ GitHub Pages serves `docs/` on `main`. The original preview remains at the root 
 
 Fifty-five source tests cover content completeness, locale key parity, URL validation, resilient storage, full history context, measured label bounds, poster races and deterministic GSAP retargeting continuity. The latter exercise actual scene methods without WebGL; they are not a browser motion recording. Actual browser checks are recorded separately with their preview revision, conditions and remaining gaps. A successful build or screenshot is not presented as proof of smooth motion. Mobile viewport tests are emulation, not a claim of physical phone or Safari testing. Translations have not been reviewed by a native-speaker panel.
 
-The public preview is available, with source models and static browser evidence. Functional flows and keyboard corrections have been checked as described in the QA log. **Final motion acceptance remains open:** no continuous browser recording was obtained, and a 20-second sample was invalidated by browser throttling. Physical-phone performance, Safari, native 200% zoom and real context-loss recovery remain unverified. See [QA status](docs/QA.md) for exact versions and evidence. No screenshot or successful build substitutes for these checks.
+The public preview is available, with source models and static browser evidence. The revision browser pass checked all nine story openings/returns, EN/RU/KK labels, narrow layouts, and exact Back/Forward restoration of the Almaty Walk stop, 72px scroll and source focus. Requested and measured responsive sizes are distinguished in the revision log. **Final motion acceptance remains open:** no continuous browser recording was obtained, and a 20-second sample was invalidated by browser throttling. Physical-phone performance, Safari, native 200% zoom and real context-loss recovery remain unverified. The revised fallback switch, reduced-motion browser behavior and rapid Back during an unfinished transition remain unverified. See [revision QA status](docs/QA_REVISION.md) for exact versions and evidence. No screenshot or successful build substitutes for these checks.
 
 No new blanket license is assigned here. Noto fonts retain their included SIL Open Font License. Generated material remains subject to the applicable service/provider terms.

@@ -28,7 +28,8 @@
     "all_hinges_use_local_x": true,
     "nine_place_anchors_retained": true,
     "story_tab_attached_to_wing": true,
-    "counts_match_blender_manifest": true
+    "counts_match_blender_manifest": true,
+    "baseline_rig_node_names_retained": true
   },
   "limits": "Structural export checks only. No exact paper collision solving, browser timing or physical phone testing."
 }

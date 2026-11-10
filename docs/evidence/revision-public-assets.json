@@ -1,0 +1,104 @@
+{
+  "checked_utc": "2026-11-10T16:39:48Z",
+  "commit": "49f444634d7a67a0ac027b74071956034cf6d84b",
+  "base": "https://seoshiro.github.io/fold/review/",
+  "checks": [
+    {
+      "path": "",
+      "status": 200,
+      "bytes": 860,
+      "content_type": "text/html; charset=utf-8",
+      "sha256": "858ac83bf424844a403f3ce359ac9494f7f8b6b29cac2218318fb61e0955ea29",
+      "matches_local": true
+    },
+    {
+      "path": "?city=kyoto&place=gion",
+      "status": 200,
+      "bytes": 860,
+      "content_type": "text/html; charset=utf-8",
+      "sha256": "858ac83bf424844a403f3ce359ac9494f7f8b6b29cac2218318fb61e0955ea29",
+      "matches_local": true
+    },
+    {
+      "path": "?city=almaty&tab=walk&stop=2&place=bazaar",
+      "status": 200,
+      "bytes": 860,
+      "content_type": "text/html; charset=utf-8",
+      "sha256": "858ac83bf424844a403f3ce359ac9494f7f8b6b29cac2218318fb61e0955ea29",
+      "matches_local": true
+    },
+    {
+      "path": "assets/index-CKsJtpWG.js",
+      "status": 200,
+      "bytes": 264848,
+      "content_type": "application/javascript; charset=utf-8",
+      "sha256": "ac0ddfa99ef6c1fa89da5e59bdffe4a82fce77282762c6df9b0de0ef390af0be",
+      "matches_local": true
+    },
+    {
+      "path": "assets/scene-5qmgOc3-.js",
+      "status": 200,
+      "bytes": 660453,
+      "content_type": "application/javascript; charset=utf-8",
+      "sha256": "8895b80d8cc3fb6fff450a1aa9a27cc8be74d3206223abf3ad2deaf08f0b2ee2",
+      "matches_local": true
+    },
+    {
+      "path": "assets/index-DqoM36Jh.css",
+      "status": 200,
+      "bytes": 19499,
+      "content_type": "text/css; charset=utf-8",
+      "sha256": "c8ad89202c606c18f85217c14bb3a1f2f816f6f3a081da31e832ee60da3a7dbd",
+      "matches_local": true
+    },
+    {
+      "path": "models/fold-master.glb",
+      "status": 200,
+      "bytes": 1404220,
+      "content_type": "model/gltf-binary",
+      "sha256": "32763c01ef02dae2b13a5b02882baa5ff81496936a2a6ece23831b82d69d8d4d",
+      "matches_local": true
+    },
+    {
+      "path": "posters/kyoto.webp",
+      "status": 200,
+      "bytes": 63496,
+      "content_type": "image/webp",
+      "sha256": "c7b6300e87af039b8c7f5b22f3d9467185f7c9a42e97860793a252877380dbaa",
+      "matches_local": true
+    },
+    {
+      "path": "posters/lisbon.webp",
+      "status": 200,
+      "bytes": 60264,
+      "content_type": "image/webp",
+      "sha256": "58d9e6a00806f76af8b26d3f8b2f3b264c3577743f05ce67501ad26e605d2808",
+      "matches_local": true
+    },
+    {
+      "path": "posters/almaty.webp",
+      "status": 200,
+      "bytes": 53908,
+      "content_type": "image/webp",
+      "sha256": "085685426de0b266bad0df65f456ed5a4247d411655e07ced3851331562550d2",
+      "matches_local": true
+    },
+    {
+      "path": "fonts/noto-sans.woff",
+      "status": 200,
+      "bytes": 89932,
+      "content_type": "font/woff",
+      "sha256": "a623590161a6600eb7808034543fb37d1fed0f2fa50d7503980f92e1ca186d91",
+      "matches_local": true
+    },
+    {
+      "path": "fonts/noto-serif.woff",
+      "status": 200,
+      "bytes": 97488,
+      "content_type": "font/woff",
+      "sha256": "b988b0436279ca5d6b5711319331899117cfaf55cf91167c6edccede2ac930cf",
+      "matches_local": true
+    }
+  ],
+  "limits": "HTTP and exact asset equality only; not browser interaction, continuous motion or performance evidence."
+}
