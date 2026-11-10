@@ -178,6 +178,9 @@ export class FoldScene {
     this.target = { ...next, focus: next.focus ?? null };
     if (!this.ready || this.disposed) return;
     if (!force && prev.city === next.city && prev.place === next.place && (prev.focus ?? null) === (next.focus ?? null) && prev.intro === next.intro && prev.reducedMotion === next.reducedMotion) return;
+    // Finishing/skipping the intro updates React's remembered flag, not the physical pose.
+    // Do not create a redundant folding timeline for that state-only acknowledgment.
+    if (!force && prev.city === next.city && prev.place === next.place && (prev.focus ?? null) === (next.focus ?? null) && prev.reducedMotion === next.reducedMotion && prev.intro && !next.intro && this.pose.intro === 1) return;
     this.transition?.kill(); this.transition = null;
     const fast = next.reducedMotion;
     if (next.intro && !this.startedIntro && !next.city && !fast) {
@@ -208,6 +211,9 @@ export class FoldScene {
     }
     this.invalidate();
   }
+
+  /** Explicit QA control: settle the real current timeline for static inspection only. */
+  finishTransition() { this.transition?.progress(1); this.viewTween?.progress(1); this.render(); }
 
   skipIntro() { if (this.state !== 'intro') return; this.transition?.kill(); this.pose.intro = 1; this.emit('crane'); this.invalidate(); }
   resetView() { this.viewTween?.kill(); this.viewTween = gsap.to(this.pose, { dragX: 0, dragY: 0, zoom: 1, duration: this.target.reducedMotion ? .1 : .65, ease: 'power2.out', onUpdate: () => this.invalidate() }); }
